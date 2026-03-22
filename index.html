@@ -12,6 +12,10 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ru_RU">
 <meta name="theme-color" content="#00ff41">
+<meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="canonical" href="https://protehservis.ru/">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1348,7 +1352,248 @@ footer {
   letter-spacing: 2px;
 }
 
-/* MOBILE HAMBURGER */
+/* ============================
+   GPU HARDWARE ACCELERATION
+   ============================ */
+.service-card, .result-folder, .review-card, .partner-item,
+.modal, .float-payment, .btn-primary, .btn-secondary,
+.pay-btn, .service-btn, .folder-btn, .fade-in,
+#cursor, .card-video-bg, .card-photo-bg,
+.reviews-slider, .partners-slider {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+.fade-in.visible { will-change: auto; }
+
+/* ============================
+   TOUCH TARGETS — min 44x44px
+   ============================ */
+.service-btn, .folder-btn, .gallery-link-btn,
+.pay-btn, .btn-primary, .btn-secondary,
+.modal-close, .float-close, .nav-hamburger,
+.filter-btn, .service-btn, .folder-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.service-btn { padding: 11px 20px; }
+.folder-btn { padding: 10px 15px; }
+.nav-links a { min-height: 44px; display: flex; align-items: center; }
+
+/* ============================
+   CHATBOT WIDGET
+   ============================ */
+#chat-widget {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  z-index: 300;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+#chat-toggle {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0,255,65,0.2), rgba(0,212,255,0.15));
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none !important;
+  box-shadow: 0 0 20px rgba(0,255,65,0.3), 0 0 40px rgba(0,255,65,0.1);
+  transition: all 0.3s;
+  animation: chat-pulse 3s ease-in-out infinite;
+  position: relative;
+}
+#chat-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0,255,65,0.5);
+}
+@keyframes chat-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(0,255,65,0.3), 0 0 40px rgba(0,255,65,0.1); }
+  50% { box-shadow: 0 0 30px rgba(0,255,65,0.5), 0 0 60px rgba(0,255,65,0.2); }
+}
+.chat-unread-dot {
+  position: absolute; top: -2px; right: -2px;
+  width: 14px; height: 14px;
+  background: var(--neon-red);
+  border-radius: 50%;
+  border: 2px solid var(--bg-dark);
+  box-shadow: 0 0 8px var(--neon-red);
+  animation: blink 1.5s infinite;
+}
+#chat-panel {
+  display: none;
+  flex-direction: column;
+  width: 310px;
+  max-height: 480px;
+  background: rgba(2,12,2,0.97);
+  border: 1px solid rgba(0,255,65,0.3);
+  box-shadow: 0 0 40px rgba(0,255,65,0.1), 0 20px 60px rgba(0,0,0,0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+#chat-panel.open { display: flex; }
+.chat-header {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(0,255,65,0.1), rgba(0,212,255,0.05));
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.chat-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0,255,65,0.3), rgba(0,212,255,0.2));
+  border: 1px solid var(--neon-green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 10px rgba(0,255,65,0.3);
+}
+.chat-header-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px; color: var(--neon-green);
+  letter-spacing: 1px;
+}
+.chat-header-status {
+  font-size: 9px; color: var(--neon-green);
+  letter-spacing: 1px; opacity: 0.7;
+}
+.chat-header-status::before { content: '● '; color: #00ff41; }
+.chat-close-btn {
+  margin-left: auto;
+  background: transparent; border: none;
+  color: var(--text-dim); font-size: 18px;
+  cursor: none !important; padding: 4px 8px;
+  transition: color 0.2s; min-height: 0;
+}
+.chat-close-btn:hover { color: var(--neon-red); }
+.chat-messages {
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.3); }
+.chat-msg {
+  max-width: 85%;
+  padding: 10px 13px;
+  font-size: 11px; line-height: 1.6;
+  letter-spacing: 0.3px;
+  border-radius: 2px;
+}
+.chat-msg.bot {
+  background: rgba(0,255,65,0.06);
+  border: 1px solid rgba(0,255,65,0.15);
+  color: var(--text-main);
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+}
+.chat-msg.user {
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: var(--neon-cyan);
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
+}
+.chat-msg.typing {
+  background: rgba(0,255,65,0.04);
+  border: 1px solid rgba(0,255,65,0.1);
+  color: var(--text-dim);
+  align-self: flex-start;
+  font-style: italic;
+}
+.chat-quick-replies {
+  padding: 8px 16px 12px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  border-top: 1px solid rgba(0,255,65,0.08);
+  flex-shrink: 0;
+}
+.chat-quick-btn {
+  padding: 7px 12px;
+  background: rgba(0,255,65,0.06);
+  border: 1px solid rgba(0,255,65,0.25);
+  color: var(--neon-green);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 1px;
+  cursor: none !important;
+  transition: all 0.25s;
+  white-space: nowrap;
+  min-height: 32px;
+}
+.chat-quick-btn:hover {
+  background: rgba(0,255,65,0.15);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 8px rgba(0,255,65,0.2);
+}
+.chat-input-row {
+  display: flex; gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0,255,65,0.12);
+  flex-shrink: 0;
+}
+.chat-input {
+  flex: 1;
+  background: rgba(0,255,65,0.04);
+  border: 1px solid rgba(0,255,65,0.2);
+  color: var(--text-main);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 38px;
+}
+.chat-input:focus { border-color: rgba(0,255,65,0.5); }
+.chat-input::placeholder { color: var(--text-dim); }
+.chat-send-btn {
+  width: 38px; height: 38px;
+  background: rgba(0,255,65,0.1);
+  border: 1px solid rgba(0,255,65,0.3);
+  color: var(--neon-green);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none !important;
+  transition: all 0.2s;
+  min-height: 0; flex-shrink: 0;
+}
+.chat-send-btn:hover { background: rgba(0,255,65,0.2); box-shadow: 0 0 10px rgba(0,255,65,0.3); }
+.chat-link-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; margin-top: 6px; margin-right: 6px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.3);
+  color: var(--neon-cyan);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 1px;
+  text-decoration: none;
+  cursor: none !important;
+  transition: all 0.2s;
+  min-height: 34px;
+}
+.chat-link-btn:hover { background: rgba(0,212,255,0.15); }
+
+/* SLOW-NET VIDEO POSTER */
+.card-video-bg.use-poster {
+  display: none !important;
+}
+.card-poster-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0; transition: opacity 0.5s;
+  z-index: 0; pointer-events: none;
+}
+.service-card:hover .card-poster-bg,
+.result-folder:hover .card-poster-bg { opacity: 0.22; }
+
+/* ============================
+   MOBILE HAMBURGER */
 .nav-hamburger {
   display: none;
   background: transparent;
@@ -1363,11 +1608,15 @@ footer {
   .nav-links { 
     display: none; 
     position: absolute; top: 100%; left: 0; right: 0;
-    background: rgba(2,12,2,0.98);
+    background: rgba(2,12,2,0.72);
     flex-direction: column; gap: 0;
     border-bottom: 1px solid rgba(0,255,65,0.2);
-    backdrop-filter: blur(15px);
-    padding: 10px 0;
+    border-left: 1px solid rgba(0,255,65,0.1);
+    border-right: 1px solid rgba(0,255,65,0.1);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(0,255,65,0.1);
+    padding: 6px 0 10px;
   }
   .nav-links.open { display: flex; }
   .nav-links a { padding: 12px 20px; border: none; border-bottom: 1px solid rgba(0,255,65,0.08); }
@@ -1405,6 +1654,30 @@ footer {
   </span>
 </div>
 
+<!-- CHATBOT WIDGET -->
+<div id="chat-widget" aria-label="Чат с помощником">
+  <div id="chat-panel" role="dialog" aria-modal="false" aria-label="Помощник ProTech">
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div>
+        <div class="chat-header-name">PROTECH ПОМОЩНИК</div>
+        <div class="chat-header-status">онлайн</div>
+      </div>
+      <button class="chat-close-btn" id="chatCloseBtn" aria-label="Закрыть чат">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-quick-replies" id="chatQuickReplies"></div>
+    <div class="chat-input-row">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Напишите вопрос..." maxlength="200" autocomplete="off">
+      <button class="chat-send-btn" id="chatSendBtn" aria-label="Отправить">➤</button>
+    </div>
+  </div>
+  <button id="chat-toggle" aria-label="Открыть чат" title="Задать вопрос">
+    💬
+    <span class="chat-unread-dot" id="chatUnreadDot"></span>
+  </button>
+</div>
+
 <!-- LIGHTBOX -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр медиа">
   <button id="lightbox-close" aria-label="Закрыть">✕</button>
@@ -1417,7 +1690,7 @@ footer {
   <button class="float-close" onclick="document.getElementById('floatPayment').classList.remove('visible')">✕</button>
   <div class="float-payment-title">⚡ ДИАГНОСТИКА</div>
   <div class="float-payment-price">500 <small>₽</small></div>
-  <a href="https://app.lava.top/products/0ff47d11-a7be-40be-a29d-edfbcb06d7f0" target="_blank" rel="noopener noreferrer">ОПЛАТИТЬ → СКИДКА 15%</a>
+  <a href="https://app.lava.top/products/0ff47d11-a7be-40be-a29d-edfbcb06d7f0" target="_blank" rel="noopener noreferrer">⚡ ОПЛАТИТЬ → СКИДКА 10% НА РЕМОНТ</a>
 </div>
 
 <div class="content-wrapper">
@@ -1436,7 +1709,7 @@ footer {
   </div>
   <div class="cta-group">
     <a href="#diagnostic" class="btn-primary">⚡ Диагностика 500₽</a>
-    <a href="#services" class="btn-secondary">→ Наши услуги</a>
+    <a href="#services" class="btn-secondary">🎁 Скидка 10% на первый ремонт</a>
   </div>
   <div class="stats-row fade-in">
     <div class="stat-item">
@@ -1536,8 +1809,18 @@ footer {
       <button class="service-btn">► Смотреть работы</button>
     </div>
 
-    <div class="service-card fade-in" style="background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,255,65,0.03)); border-color: rgba(0,212,255,0.2);">
+    <div class="service-card fade-in" onclick="openModal('electro')">
+      <video class="card-video-bg" data-src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop playsinline preload="none"></video>
       <span class="service-num">08</span>
+      <span class="service-icon">🛴</span>
+      <div class="service-title">Электросамокаты и Гироскутеры</div>
+      <div class="service-desc">Профессиональный ремонт: замена ячеек АКБ, гидроизоляция IP67, прошивка контроллеров, ремонт мотор-колёс. Любые бренды.</div>
+      <div class="service-price">от 800₽ • срок: 1-3 дня</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" style="background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,255,65,0.03)); border-color: rgba(0,212,255,0.2);">
+      <span class="service-num">09</span>
       <span class="service-icon">⚡</span>
       <div class="service-title" style="color:var(--neon-cyan);">Срочный ремонт</div>
       <div class="service-desc">Выезд мастера или максимально быстрое выполнение. Приоритетная очередь, работа в выходные дни.</div>
@@ -1561,14 +1844,14 @@ footer {
         <li>Письменное заключение с описанием неисправностей и причин возникновения</li>
         <li>Точная стоимость ремонта БЕЗ скрытых платежей после оплаты диагностики</li>
         <li>Диагностика входит в стоимость ремонта — при заказе работ вы платите только за ремонт</li>
-        <li>Скидка 15% на любую услугу — диагностика окупается мгновенно</li>
+        <li>Скидка 10% на первый ремонт при записи через сайт — диагностика окупается мгновенно</li>
         <li>Гарантия на выводы — если нашли проблему, точно исправим её</li>
       </ul>
       <div class="terminal-line">
         <span class="prompt">$</span> <span class="cmd">calculate_savings</span><br>
         <span class="out">→ Стоимость ремонта: 3000₽</span><br>
-        <span class="out">→ Скидка 15%: -450₽</span><br>
-        <span class="out">→ Итого: <span style="color:var(--neon-green)">2550₽ (экономия 450₽ ≫ 500₽ за диагностику)</span></span>
+        <span class="out">→ Скидка 10%: -300₽</span><br>
+        <span class="out">→ Итого: <span style="color:var(--neon-green)">2550₽ (экономия 300₽ + бесплатная диагностика при заказе)</span></span>
       </div>
     </div>
     <div class="diag-card fade-in">
@@ -1577,19 +1860,22 @@ footer {
         <span class="diag-main-price"><span class="diag-currency">₽</span>500</span>
         <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-top:5px;">ПОЛНАЯ ДИАГНОСТИКА</div>
       </div>
-      <div class="discount-badge">🔥 СКИДКА 15% НА РЕМОНТ В ПОДАРОК</div>
+      <div class="discount-badge">🔥 🎁 СКИДКА 10% НА ПЕРВЫЙ РЕМОНТ ПРИ ЗАПИСИ ЧЕРЕЗ САЙТ</div>
       <ul class="diag-features">
         <li><span class="check">✓</span> Диагностика на оборудовании</li>
         <li><span class="check">✓</span> Выявление всех проблем</li>
         <li><span class="check">✓</span> Письменное заключение</li>
         <li><span class="check">✓</span> Точная стоимость ремонта</li>
-        <li><span class="check">✓</span> Скидка 15% при заказе</li>
+        <li><span class="check">✓</span> Скидка 10% на первый ремонт через сайт</li>
         <li><span class="check">✓</span> Гарантия на работы</li>
       </ul>
       <a href="https://app.lava.top/products/0ff47d11-a7be-40be-a29d-edfbcb06d7f0" target="_blank" rel="noopener noreferrer" class="pay-btn">
-        ⚡ ОПЛАТИТЬ ДИАГНОСТИКУ →
+        ⚡ ОПЛАТИТЬ ДИАГНОСТИКУ 500₽ →
       </a>
-      <p style="font-size:9px;color:var(--text-dim);text-align:center;margin-top:15px;letter-spacing:1px;">Безопасная оплата через LAVA · Возврат если не приедете</p>
+      <div style="margin-top:12px;padding:10px 15px;background:rgba(0,255,65,0.04);border:1px solid rgba(0,255,65,0.15);text-align:center;">
+        <div style="font-size:10px;color:var(--neon-green);letter-spacing:1px;">🎁 ЗАПИСЬ ЧЕРЕЗ САЙТ = СКИДКА 10% НА ПЕРВЫЙ РЕМОНТ</div>
+      </div>
+      <p style="font-size:9px;color:var(--text-dim);text-align:center;margin-top:12px;letter-spacing:1px;">Безопасная оплата через LAVA · Возврат если не приедете</p>
     </div>
   </div>
 </section>
@@ -1987,6 +2273,30 @@ footer {
       <li>Умные колонки — от 600₽</li>
       <li>Портативные зарядки (Power Bank) — от 400₽</li>
     </ul>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-electro">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🛴 ЭЛЕКТРОСАМОКАТЫ И ГИРОСКУТЕРЫ</div>
+      <button class="modal-close" onclick="closeModal('electro')">✕</button>
+    </div>
+    <div class="modal-work-grid">
+      <div class="modal-work-item"><span class="work-icon">🔋</span><div class="work-title">Замена ячеек АКБ</div><div class="work-price">от 1500₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">💧</span><div class="work-title">Гидроизоляция IP67</div><div class="work-price">от 1200₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">💻</span><div class="work-title">Прошивка контроллера</div><div class="work-price">от 800₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">⚙️</span><div class="work-title">Ремонт мотор-колеса</div><div class="work-price">от 1000₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🔌</span><div class="work-title">Замена BMS платы</div><div class="work-price">от 900₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🛠️</span><div class="work-title">Диагностика электрики</div><div class="work-price">500₽</div></div>
+    </div>
+    <div style="margin-top:20px;padding-top:15px;border-top:1px solid rgba(0,255,65,0.1);">
+      <div style="font-size:10px;color:var(--neon-cyan);letter-spacing:2px;margin-bottom:12px;">// ПОДДЕРЖИВАЕМЫЕ МАРКИ //</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.9;">Xiaomi / Ninebot / Kugoo / Inmotion / Kaabo / E-KickScooter / любые бренды</div>
+    </div>
     <div style="margin-top:20px;">
       <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
     </div>
@@ -2469,6 +2779,247 @@ if (!isMobile) {
       }
     });
   }, 500);
+}
+
+// ===== INTERSECTIONOBSERVER ДЛЯ КАРТОЧЕК С ВИДЕО =====
+// На тач-устройствах видео в карточках скрыты через CSS,
+// но для модальных видео и результатов используем IO
+document.querySelectorAll('.modal video[src]').forEach(vid => {
+  const modal = vid.closest('.modal-overlay');
+  if (!modal) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) vid.play().catch(() => {});
+      else { vid.pause(); vid.currentTime = 0; }
+    });
+  }, { threshold: 0.3 });
+  io.observe(vid);
+});
+
+// ===== NETWORK INFORMATION API — FALLBACK ДЛЯ СЛАБОЙ СЕТИ =====
+(function applyNetworkFallback() {
+  const c = navigator.connection;
+  if (!c) return;
+  const isSlow = c.saveData || c.effectiveType === '2g' || c.effectiveType === 'slow-2g';
+  if (!isSlow) return;
+  // Скрываем все card-video-bg, не загружаем вообще
+  document.querySelectorAll('.card-video-bg').forEach(v => {
+    v.classList.add('use-poster');
+    v.removeAttribute('data-src');
+  });
+  // Убираем matrix и lightning на очень слабой сети
+  const matrixCanvas = document.getElementById('matrix-bg');
+  const lightCanvas = document.getElementById('lightning-canvas');
+  if (matrixCanvas) matrixCanvas.style.display = 'none';
+  if (lightCanvas) lightCanvas.style.display = 'none';
+})();
+
+// ===== TELEGRAM / WEBVIEW KEYBOARD FIX =====
+// Предотвращаем схлопывание layout при открытии клавиатуры
+if (window.visualViewport) {
+  let prevHeight = window.visualViewport.height;
+  window.visualViewport.addEventListener('resize', () => {
+    const heightDiff = prevHeight - window.visualViewport.height;
+    if (heightDiff > 100) {
+      // Клавиатура открылась — не даём сайту перерисоваться
+      document.body.style.height = prevHeight + 'px';
+      // Скроллим чат-инпут в видимую зону
+      const inp = document.getElementById('chatInput');
+      if (inp === document.activeElement) {
+        setTimeout(() => inp.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+      }
+    } else {
+      document.body.style.height = '';
+      prevHeight = window.visualViewport.height;
+    }
+  });
+}
+
+// ===== SMART CHATBOT =====
+const CHAT_RESPONSES = [
+  {
+    patterns: ['цен', 'стоим', 'сколько', 'прайс', 'почём'],
+    text: 'Цены на основные услуги:\n▸ Диагностика — 500₽\n▸ Ремонт телефона — от 500₽\n▸ Замена экрана — от 800₽\n▸ Ноутбук — от 600₽\n▸ Электросамокат — от 800₽\n\n🎁 Скидка 10% на первый ремонт при записи через сайт!',
+    replies: ['Сроки ремонта', 'Где вы находитесь?', 'Записаться']
+  },
+  {
+    patterns: ['срок', 'долго', 'быстр', 'когда', 'сколько времени'],
+    text: 'Сроки выполнения работ:\n▸ Телефоны — 1-24 часа\n▸ Планшеты — 1-3 дня\n▸ Ноутбуки / ПК — 1-5 дней\n▸ Игровые консоли — 1-3 дня\n▸ Электросамокаты — 1-3 дня\n▸ Срочный ремонт — от 2 часов (+50%)',
+    replies: ['Цены на ремонт', 'Где вы?', 'Записаться']
+  },
+  {
+    patterns: ['адрес', 'где', 'находи', 'приех', 'приити', 'карт', 'тамбов'],
+    text: '📍 Мы находимся:\nТамбов, ул. Бастионная 24ж\n\n⏰ Режим работы:\nПн–Сб 09:00–20:00\n\nЗвоните или пишите — ответим быстро!',
+    replies: ['Цены на ремонт', 'Записаться', 'Сроки ремонта']
+  },
+  {
+    patterns: ['гарант', 'гарантия'],
+    text: '✅ На все выполненные работы мы даём гарантию 1 год.\n\nЕсли что-то пойдёт не так — исправим бесплатно!',
+    replies: ['Цены на ремонт', 'Записаться']
+  },
+  {
+    patterns: ['диагностик', 'проверк', 'что сломал'],
+    text: '🔬 Полная диагностика — 500₽.\n\nМы выявим ВСЕ проблемы, включая скрытые, и дадим письменное заключение. При заказе ремонта — диагностика входит в стоимость!',
+    replies: ['Оплатить диагностику', 'Записаться', 'Сроки']
+  },
+  {
+    patterns: ['электросамокат', 'гироскутер', 'самокат', 'акб', 'аккумулятор самокат'],
+    text: '🛴 Ремонт электротранспорта:\n▸ Замена ячеек АКБ — от 1500₽\n▸ Гидроизоляция IP67 — от 1200₽\n▸ Прошивка контроллера — от 800₽\n▸ Ремонт мотор-колеса — от 1000₽\n\nXiaomi, Ninebot, Kugoo, Kaabo и любые другие!',
+    replies: ['Записаться', 'Где вы?', 'Сроки']
+  },
+  {
+    patterns: ['icloud', 'айклауд', 'заблокир', 'разблокир', 'frp'],
+    text: '🔓 Разблокировка:\n▸ Разблокировка iCloud — от 2000₽\n▸ FRP обход Google — от 1000₽\n▸ Разблокировка Android — от 1200₽\n\nРаботаем официальными методами. Без потери данных!',
+    replies: ['Записаться', 'Где вы?', 'Сроки']
+  }
+];
+
+const FALLBACK_RESPONSE = {
+  text: 'Для точной оценки вашей поломки лучше прислать фото или описание нашему мастеру напрямую.',
+  replies: [],
+  links: true
+};
+
+let chatOpened = false;
+
+function chatFindResponse(text) {
+  const lower = text.toLowerCase();
+  for (const r of CHAT_RESPONSES) {
+    if (r.patterns.some(p => lower.includes(p))) return r;
+  }
+  return null;
+}
+
+function chatAddMsg(text, role) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function chatSetReplies(replies, extraLinks) {
+  const qr = document.getElementById('chatQuickReplies');
+  qr.innerHTML = '';
+  (replies || []).forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'chat-quick-btn';
+    btn.textContent = r;
+    btn.addEventListener('click', () => {
+      // Special action buttons
+      if (r === 'Записаться') {
+        window.open('https://t.me/ProTehServis', '_blank', 'noopener');
+        return;
+      }
+      if (r === 'Оплатить диагностику') {
+        window.open('https://app.lava.top/products/0ff47d11-a7be-40be-a29d-edfbcb06d7f0', '_blank', 'noopener');
+        return;
+      }
+      chatAddMsg(r, 'user');
+      const resp = chatFindResponse(r);
+      chatBotReply(resp || FALLBACK_RESPONSE);
+    });
+    qr.appendChild(btn);
+  });
+  if (extraLinks) {
+    const tg = document.createElement('a');
+    tg.href = 'https://t.me/ProTehServis';
+    tg.target = '_blank';
+    tg.rel = 'noopener noreferrer';
+    tg.className = 'chat-link-btn';
+    tg.innerHTML = '✈️ Telegram';
+    const wa = document.createElement('a');
+    wa.href = 'https://t.me/ProTehServis';
+    wa.target = '_blank';
+    wa.rel = 'noopener noreferrer';
+    wa.className = 'chat-link-btn';
+    wa.innerHTML = '🟢 WhatsApp / Telegram';
+    qr.appendChild(tg);
+    qr.appendChild(wa);
+  }
+}
+
+function chatBotReply(response) {
+  const msgs = document.getElementById('chatMessages');
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'chat-msg typing';
+  typing.textContent = '● ● ●';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    typing.remove();
+    const msg = chatAddMsg(response.text, 'bot');
+    chatSetReplies(response.replies, response.links);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 700 + Math.random() * 500);
+}
+
+function initChat() {
+  const panel = document.getElementById('chat-panel');
+  const toggle = document.getElementById('chat-toggle');
+  const closeBtn = document.getElementById('chatCloseBtn');
+  const sendBtn = document.getElementById('chatSendBtn');
+  const input = document.getElementById('chatInput');
+  const dot = document.getElementById('chatUnreadDot');
+  if (!panel || !toggle) return;
+
+  toggle.addEventListener('click', () => {
+    const isOpen = panel.classList.toggle('open');
+    if (dot) dot.style.display = 'none';
+    if (isOpen && !chatOpened) {
+      chatOpened = true;
+      setTimeout(() => {
+        chatBotReply({
+          text: 'Привет! Я помощник ProTech 🤖\nЧем могу помочь?',
+          replies: ['Цены на ремонт', 'Сроки', 'Где вы находитесь?', 'Связаться с мастером']
+        });
+      }, 300);
+    }
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', () => panel.classList.remove('open'));
+
+  function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    chatAddMsg(text, 'user');
+    input.value = '';
+    const resp = chatFindResponse(text);
+    chatBotReply(resp || FALLBACK_RESPONSE);
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  // "Связаться с мастером" quick reply
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('chat-quick-btn') && e.target.textContent === 'Связаться с мастером') {
+      chatAddMsg('Связаться с мастером', 'user');
+      chatBotReply({
+        text: 'Напишите нашему мастеру напрямую — ответим в течение 5 минут!',
+        replies: [],
+        links: true
+      });
+    }
+  });
+
+  // Показываем точку на кнопке через 3 сек после загрузки
+  if (dot) setTimeout(() => { if (!chatOpened) dot.style.display = 'block'; }, 3000);
+}
+
+initChat();
+
+// Cursor hover для чат-элементов
+if (!isTouchDevice) {
+  document.querySelectorAll('#chat-toggle, .chat-quick-btn, .chat-send-btn, .chat-close-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor && cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor && cursor.classList.remove('hover'));
+  });
 }
 
 console.log('%c ██████╗ ██████╗  ██████╗ ████████╗███████╗██╗  ██╗', 'color: #00ff41; font-size: 8px; font-family: monospace;');
