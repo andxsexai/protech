@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ПроТехСервис | Ремонт техники в Тамбове</title>
 <meta name="description" content="Профессиональный ремонт телефонов, ноутбуков, планшетов и игровых консолей в Тамбове. ПроТехСервис — ул. Бастионная 24ж. Диагностика 500₽, гарантия на работы.">
 <meta name="keywords" content="ремонт телефонов Тамбов, ремонт ноутбуков Тамбов, ремонт iPhone Тамбов, разблокировка iCloud, FRP обход, реболлинг BGA, EMMC, сервисный центр Тамбов">
@@ -166,9 +166,8 @@ nav {
   z-index: 100;
   padding: 15px 40px;
   display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, transparent 100%);
+  background: rgba(2,8,2,0.96);
   border-bottom: 1px solid rgba(0,255,65,0.2);
-  backdrop-filter: blur(10px);
 }
 .nav-logo {
   font-family: 'Orbitron', monospace;
@@ -244,11 +243,11 @@ nav {
   text-transform: uppercase;
   margin-bottom: 30px;
   animation: pulse-border 2s infinite;
-  box-shadow: 0 0 10px rgba(0,255,65,0.2), inset 0 0 10px rgba(0,255,65,0.05);
+  box-shadow: 0 0 8px rgba(0,255,65,0.2);
 }
 @keyframes pulse-border {
-  0%, 100% { box-shadow: 0 0 10px rgba(0,255,65,0.2), inset 0 0 10px rgba(0,255,65,0.05); }
-  50% { box-shadow: 0 0 20px rgba(0,255,65,0.4), inset 0 0 20px rgba(0,255,65,0.1); }
+  0%, 100% { box-shadow: 0 0 8px rgba(0,255,65,0.2); }
+  50% { box-shadow: 0 0 16px rgba(0,255,65,0.4); }
 }
 .hero-title {
   font-family: 'Orbitron', monospace;
@@ -316,8 +315,9 @@ nav {
 .btn-primary:hover::before { left: 100%; }
 .btn-primary:hover {
   background: rgba(0,255,65,0.1);
-  box-shadow: 0 0 20px rgba(0,255,65,0.5), 0 0 40px rgba(0,255,65,0.2), inset 0 0 20px rgba(0,255,65,0.1);
+  box-shadow: 0 0 16px rgba(0,255,65,0.4);
   transform: translateY(-2px);
+  will-change: transform;
 }
 .btn-secondary {
   position: relative;
@@ -336,8 +336,9 @@ nav {
 }
 .btn-secondary:hover {
   background: rgba(0,212,255,0.1);
-  box-shadow: 0 0 20px rgba(0,212,255,0.5), 0 0 40px rgba(0,212,255,0.2);
+  box-shadow: 0 0 16px rgba(0,212,255,0.4);
   transform: translateY(-2px);
+  will-change: transform;
 }
 
 /* STATS ROW */
@@ -441,8 +442,9 @@ section {
 .service-card:hover::after { opacity: 1; }
 .service-card:hover {
   border-color: rgba(0,255,65,0.5);
-  box-shadow: 0 0 30px rgba(0,255,65,0.1), inset 0 0 30px rgba(0,255,65,0.03);
+  box-shadow: 0 0 20px rgba(0,255,65,0.1);
   transform: translateY(-3px);
+  will-change: transform;
 }
 .service-icon {
   font-size: 32px;
@@ -962,7 +964,6 @@ footer {
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
   transition: opacity 0.3s;
-  backdrop-filter: blur(5px);
 }
 .modal-overlay.active { opacity: 1; pointer-events: all; }
 .modal {
@@ -1316,7 +1317,6 @@ footer {
   background: rgba(0,0,0,0.97);
   z-index: 9999;
   display: none; align-items: center; justify-content: center;
-  backdrop-filter: blur(8px);
 }
 #lightbox.open { display: flex; }
 #lightbox-content {
@@ -1429,11 +1429,9 @@ footer {
   flex-direction: column;
   width: 310px;
   max-height: 480px;
-  background: rgba(2,12,2,0.97);
+  background: rgba(2,12,2,0.98);
   border: 1px solid rgba(0,255,65,0.3);
-  box-shadow: 0 0 40px rgba(0,255,65,0.1), 0 20px 60px rgba(0,0,0,0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.7);
   margin-bottom: 12px;
   overflow: hidden;
 }
@@ -1608,35 +1606,39 @@ footer {
   .nav-links { 
     display: none; 
     position: absolute; top: 100%; left: 0; right: 0;
-    background: rgba(2,12,2,0.72);
+    background: rgba(2,10,2,0.98);
     flex-direction: column; gap: 0;
     border-bottom: 1px solid rgba(0,255,65,0.2);
     border-left: 1px solid rgba(0,255,65,0.1);
     border-right: 1px solid rgba(0,255,65,0.1);
-    backdrop-filter: blur(24px) saturate(200%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(0,255,65,0.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     padding: 6px 0 10px;
   }
   .nav-links.open { display: flex; }
   .nav-links a { padding: 12px 20px; border: none; border-bottom: 1px solid rgba(0,255,65,0.08); }
 }
 
-/* ===== MOBILE: упрощённые тени (экономим GPU) ===== */
+/* ===== MOBILE PERFORMANCE ===== */
 @media (max-width: 768px) {
-  .service-card { box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important; }
-  .service-card:hover { box-shadow: 0 4px 12px rgba(0,255,65,0.15) !important; }
-  .btn-primary, .btn-secondary { box-shadow: none !important; }
-  .btn-primary:hover, .btn-secondary:hover { box-shadow: 0 0 8px rgba(0,255,65,0.3) !important; }
-  .result-folder { box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
-  .review-card { box-shadow: none !important; }
-  .modal { box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important; }
-  /* Hardware acceleration для карточек */
-  .service-card, .result-folder, .modal-media-item {
-    transform: translateZ(0);
-    will-change: transform, opacity;
-    backface-visibility: hidden;
+  /* Скрываем все видео — экономим CPU/GPU/трафик */
+  .card-video-bg,
+  .service-card video,
+  .result-folder video {
+    display: none !important;
   }
+  /* Упрощённые тени */
+  .service-card { box-shadow: 0 2px 6px rgba(0,0,0,0.5) !important; }
+  .service-card:hover { box-shadow: 0 2px 10px rgba(0,255,65,0.12) !important; }
+  .btn-primary, .btn-secondary { box-shadow: none !important; }
+  .result-folder { box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important; }
+  .review-card { box-shadow: none !important; }
+  .modal { box-shadow: 0 4px 16px rgba(0,0,0,0.6) !important; }
+  #chat-panel { box-shadow: 0 2px 12px rgba(0,0,0,0.5) !important; }
+}
+/* Hardware acceleration для hover-анимаций */
+.service-card, .result-folder, .btn-primary, .btn-secondary {
+  will-change: transform;
+  backface-visibility: hidden;
 }
 </style>
 </head>
@@ -2684,53 +2686,26 @@ if (hamburger && navLinks) {
   });
 }
 
-// ===== VIDEO INTERSECTION OBSERVER (20% threshold) =====
-// Загружаем и воспроизводим видео-фон только когда карточка попадает в viewport
-// При выходе — обязательно pausim → разгружаем GPU/CPU
-(function initCardVideoIO() {
-  const isTouchUI = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-
-  document.querySelectorAll('.card-video-bg[data-src]').forEach(vid => {
-    const card = vid.closest('.service-card, .result-folder');
-    if (!card) return;
-    let loaded = false;
-
-    function loadAndPlay() {
-      if (!loaded) {
-        loaded = true;
-        vid.src = vid.dataset.src;
-        vid.load();
+// ===== VIDEO: MINIMAL INTERSECTIONOBSERVER =====
+// Запуск только когда видео в кадре, пауза при уходе — снимает нагрузку с CPU/GPU
+const videoObserver = new IntersectionObserver(entries => {
+  entries.forEach(({ target: v, isIntersecting }) => {
+    if (isIntersecting) {
+      if (v.dataset.src && !v.getAttribute('src')) {
+        v.src = v.dataset.src;
+        v.load();
       }
-      vid.play().catch(() => {});
-    }
-
-    // IntersectionObserver — работает и на мобилке, и на десктопе
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) loadAndPlay();
-        else vid.pause();
-      });
-    }, { threshold: 0.2 });
-    io.observe(card);
-
-    // На десктопе дополнительно ставим на паузу при уходе курсора,
-    // чтобы лишние видео не крутились одновременно
-    if (!isTouchUI) {
-      card.addEventListener('mouseleave', () => vid.pause());
-      card.addEventListener('mouseenter', () => { if (loaded) vid.play().catch(() => {}); });
+      v.play().catch(() => {});
+    } else {
+      v.pause();
     }
   });
+}, { threshold: 0.1 });
 
-  // Фото-заглушки грузим тоже через IO
-  document.querySelectorAll('.card-photo-bg[data-src]').forEach(img => {
-    const card = img.closest('.service-card, .result-folder');
-    if (!card) return;
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { img.src = img.dataset.src; io.disconnect(); } });
-    }, { threshold: 0.2 });
-    io.observe(card);
-  });
-})();
+document.querySelectorAll('video').forEach(v => {
+  v.preload = 'none';
+  videoObserver.observe(v);
+});
 
 // ===== LIGHTBOX =====
 const lightbox = document.getElementById('lightbox');
@@ -2821,20 +2796,6 @@ if (!isMobile) {
   }, 500);
 }
 
-// ===== INTERSECTIONOBSERVER ДЛЯ КАРТОЧЕК С ВИДЕО =====
-// На тач-устройствах видео в карточках скрыты через CSS,
-// но для модальных видео и результатов используем IO
-document.querySelectorAll('.modal video[src]').forEach(vid => {
-  const modal = vid.closest('.modal-overlay');
-  if (!modal) return;
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) vid.play().catch(() => {});
-      else { vid.pause(); vid.currentTime = 0; }
-    });
-  }, { threshold: 0.3 });
-  io.observe(vid);
-});
 
 // ===== NETWORK INFORMATION API — FALLBACK ДЛЯ СЛАБОЙ СЕТИ =====
 (function applyNetworkFallback() {
