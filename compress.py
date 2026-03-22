@@ -1,5 +1,9 @@
 import os
-from moviepy import VideoFileClip
+
+try:
+    from moviepy import VideoFileClip          # moviepy >= 2.x
+except ImportError:
+    from moviepy.editor import VideoFileClip   # moviepy 1.x
 
 def compress_video(file_path):
     try:
