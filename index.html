@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ПроТехСервис | Ремонт техники в Тамбове</title>
+<meta name="description" content="Профессиональный ремонт телефонов, ноутбуков, планшетов и игровых консолей в Тамбове. ПроТехСервис — ул. Бастионная 24ж. Диагностика 500₽, гарантия на работы.">
+<meta name="keywords" content="ремонт телефонов Тамбов, ремонт ноутбуков Тамбов, ремонт iPhone Тамбов, разблокировка iCloud, FRP обход, реболлинг BGA, EMMC, сервисный центр Тамбов">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="ПроТехСервис | Ремонт техники в Тамбове">
+<meta property="og:description" content="Ремонт телефонов, ноутбуков, планшетов в Тамбове. Реболлинг, разблокировка iCloud, FRP обход. Диагностика 500₽.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta name="theme-color" content="#00ff41">
+<link rel="canonical" href="https://protehservis.ru/">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --neon-green: #00ff41;
+  --neon-cyan: #00d4ff;
+  --neon-red: #ff0040;
+  --neon-yellow: #ffff00;
+  --bg-dark: #020c02;
+  --bg-panel: rgba(0, 20, 0, 0.85);
+  --text-main: #c8ffc8;
+  --text-dim: #4a7a4a;
+  --border-glow: rgba(0, 255, 65, 0.3);
+  --glitch-offset: 3px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* CURSOR */
+*, *:hover { cursor: none !important; }
+#cursor {
+  width: 12px; height: 12px;
+  border: 2px solid var(--neon-green);
+  border-radius: 50%;
+  position: fixed; z-index: 99999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 10px var(--neon-green), 0 0 20px rgba(0,255,65,0.5);
+  mix-blend-mode: screen;
+}
+#cursor-trail {
+  position: fixed; z-index: 99998;
+  pointer-events: none;
+  width: 0; height: 0;
+  top: 0; left: 0;
+}
+.cursor-code {
+  position: fixed;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--neon-green);
+  pointer-events: none;
+  z-index: 99997;
+  opacity: 0;
+  white-space: nowrap;
+  text-shadow: 0 0 5px var(--neon-green);
+}
+#cursor.hover {
+  transform: translate(-50%, -50%) scale(2.5);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0,212,255,0.5);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* MATRIX CANVAS */
+#matrix-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  opacity: 0.18;
+}
+
+/* SCANLINES */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* NOISE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.4;
+}
+
+.content-wrapper { position: relative; z-index: 10; }
+
+/* GLITCH TEXT */
+.glitch {
+  position: relative;
+  animation: glitch-main 3s infinite;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+}
+.glitch::before {
+  color: var(--neon-red);
+  animation: glitch-before 3s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+}
+.glitch::after {
+  color: var(--neon-cyan);
+  animation: glitch-after 3s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+@keyframes glitch-main {
+  0%, 90%, 100% { transform: none; }
+  91% { transform: skewX(-1deg); }
+  93% { transform: skewX(1deg); }
+  95% { transform: none; }
+}
+@keyframes glitch-before {
+  0%, 88%, 100% { transform: none; opacity: 0; }
+  89% { transform: translate(-3px, 0); opacity: 0.8; }
+  91% { transform: translate(3px, 0); opacity: 0.8; }
+  93% { transform: none; opacity: 0; }
+}
+@keyframes glitch-after {
+  0%, 90%, 100% { transform: none; opacity: 0; }
+  91% { transform: translate(3px, 0); opacity: 0.8; }
+  93% { transform: translate(-3px, 0); opacity: 0.8; }
+  95% { transform: none; opacity: 0; }
+}
+
+/* NAVBAR */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 15px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+  backdrop-filter: blur(10px);
+}
+.nav-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green), 0 0 30px rgba(0,255,65,0.5);
+  letter-spacing: 2px;
+}
+.nav-logo span { color: var(--neon-cyan); }
+.nav-links { display: flex; gap: 30px; }
+.nav-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 1px;
+  background: var(--neon-green);
+  transition: width 0.3s;
+  box-shadow: 0 0 5px var(--neon-green);
+}
+.nav-links a:hover { color: var(--neon-green); border-color: rgba(0,255,65,0.3); }
+.nav-links a:hover::after { width: 100%; }
+
+/* STATUS BAR */
+.status-bar {
+  position: fixed; top: 60px; left: 0; right: 0;
+  z-index: 99;
+  background: rgba(0,255,65,0.05);
+  border-bottom: 1px solid rgba(0,255,65,0.15);
+  padding: 5px 40px;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  overflow: hidden;
+}
+.status-scroll {
+  display: inline-block;
+  animation: scroll-left 30s linear infinite;
+  white-space: nowrap;
+}
+@keyframes scroll-left {
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 120px 20px 80px;
+  position: relative;
+}
+.hero-badge {
+  display: inline-block;
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  padding: 5px 20px;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  animation: pulse-border 2s infinite;
+  box-shadow: 0 0 10px rgba(0,255,65,0.2), inset 0 0 10px rgba(0,255,65,0.05);
+}
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 10px rgba(0,255,65,0.2), inset 0 0 10px rgba(0,255,65,0.05); }
+  50% { box-shadow: 0 0 20px rgba(0,255,65,0.4), inset 0 0 20px rgba(0,255,65,0.1); }
+}
+.hero-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(36px, 8vw, 90px);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--neon-green);
+  text-shadow: 0 0 20px var(--neon-green), 0 0 60px rgba(0,255,65,0.4);
+  margin-bottom: 10px;
+  letter-spacing: 4px;
+}
+.hero-subtitle {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(14px, 3vw, 28px);
+  color: var(--neon-cyan);
+  letter-spacing: 6px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+.hero-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 50px;
+  max-width: 600px;
+}
+.hero-desc span { color: var(--neon-green); }
+
+/* LIGHTNING */
+.lightning-container {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+#lightning-canvas {
+  width: 100%; height: 100%;
+}
+
+/* CTA BUTTONS */
+.cta-group { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.btn-primary {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 35px;
+  background: transparent;
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,255,65,0.2), transparent);
+  transition: left 0.5s;
+}
+.btn-primary:hover::before { left: 100%; }
+.btn-primary:hover {
+  background: rgba(0,255,65,0.1);
+  box-shadow: 0 0 20px rgba(0,255,65,0.5), 0 0 40px rgba(0,255,65,0.2), inset 0 0 20px rgba(0,255,65,0.1);
+  transform: translateY(-2px);
+}
+.btn-secondary {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 35px;
+  background: transparent;
+  border: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+}
+.btn-secondary:hover {
+  background: rgba(0,212,255,0.1);
+  box-shadow: 0 0 20px rgba(0,212,255,0.5), 0 0 40px rgba(0,212,255,0.2);
+  transform: translateY(-2px);
+}
+
+/* STATS ROW */
+.stats-row {
+  display: flex; gap: 0; justify-content: center;
+  margin-top: 60px;
+  flex-wrap: wrap;
+}
+.stat-item {
+  padding: 20px 40px;
+  border: 1px solid rgba(0,255,65,0.2);
+  text-align: center;
+  position: relative;
+}
+.stat-item + .stat-item { border-left: none; }
+.stat-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--neon-green);
+  text-shadow: 0 0 15px var(--neon-green);
+  display: block;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* SECTION */
+section {
+  padding: 80px 40px;
+  position: relative;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.section-tag {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--neon-cyan);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  padding: 4px 15px;
+  border: 1px solid rgba(0,212,255,0.3);
+}
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 900;
+  color: var(--neon-green);
+  text-shadow: 0 0 15px rgba(0,255,65,0.5);
+  letter-spacing: 3px;
+}
+.section-title .accent { color: var(--neon-cyan); }
+.section-line {
+  width: 100px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+  margin: 20px auto 0;
+  box-shadow: 0 0 10px var(--neon-green);
+}
+
+/* SERVICES GRID */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.service-card {
+  position: relative;
+  background: var(--bg-panel);
+  border: 1px solid rgba(0,255,65,0.15);
+  padding: 30px;
+  cursor: none !important;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 0%;
+  background: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green);
+  transition: height 0.4s;
+}
+.service-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,255,65,0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.service-card:hover::before { height: 100%; }
+.service-card:hover::after { opacity: 1; }
+.service-card:hover {
+  border-color: rgba(0,255,65,0.5);
+  box-shadow: 0 0 30px rgba(0,255,65,0.1), inset 0 0 30px rgba(0,255,65,0.03);
+  transform: translateY(-3px);
+}
+.service-icon {
+  font-size: 32px;
+  margin-bottom: 15px;
+  display: block;
+  filter: drop-shadow(0 0 5px currentColor);
+}
+.service-num {
+  position: absolute; top: 15px; right: 20px;
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  color: rgba(0,255,65,0.2);
+  letter-spacing: 2px;
+}
+.service-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  color: var(--neon-green);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(0,255,65,0.4);
+}
+.service-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.service-price {
+  font-size: 11px;
+  color: var(--neon-cyan);
+  letter-spacing: 1px;
+}
+.service-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 15px;
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid rgba(0,255,65,0.3);
+  color: var(--neon-green);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: none !important;
+  transition: all 0.3s;
+  width: 100%;
+  justify-content: center;
+}
+.service-btn:hover {
+  background: rgba(0,255,65,0.1);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px rgba(0,255,65,0.3);
+}
+
+/* DIAGNOSTIC SECTION */
+.diag-section {
+  background: linear-gradient(135deg, rgba(0,20,0,0.9) 0%, rgba(0,0,20,0.9) 100%);
+  border-top: 1px solid rgba(0,255,65,0.2);
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+}
+.diag-container {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  align-items: center;
+}
+.diag-text h2 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(22px, 4vw, 38px);
+  color: var(--neon-green);
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 15px rgba(0,255,65,0.4);
+}
+.diag-text h2 .price {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 15px rgba(255,255,0,0.5);
+}
+.diag-reasons {
+  list-style: none;
+  margin: 25px 0;
+}
+.diag-reasons li {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,255,65,0.1);
+  font-size: 12px;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+.diag-reasons li::before {
+  content: '▸';
+  color: var(--neon-green);
+  flex-shrink: 0;
+  margin-top: 2px;
+  text-shadow: 0 0 5px var(--neon-green);
+}
+.diag-card {
+  background: var(--bg-panel);
+  border: 1px solid rgba(0,255,65,0.3);
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,255,65,0.05);
+}
+.diag-card::before {
+  content: 'ДИАГНОСТИКА';
+  position: absolute;
+  top: -10px; right: 20px;
+  font-family: 'Orbitron', monospace;
+  font-size: 60px;
+  color: rgba(0,255,65,0.03);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.diag-price-display {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.diag-old-price {
+  font-size: 14px;
+  color: var(--text-dim);
+  text-decoration: line-through;
+  margin-bottom: 5px;
+}
+.diag-main-price {
+  font-family: 'Orbitron', monospace;
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--neon-yellow);
+  text-shadow: 0 0 20px rgba(255,255,0,0.5), 0 0 60px rgba(255,255,0,0.2);
+  display: block;
+  animation: price-pulse 2s infinite;
+}
+@keyframes price-pulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(255,255,0,0.5), 0 0 60px rgba(255,255,0,0.2); }
+  50% { text-shadow: 0 0 30px rgba(255,255,0,0.8), 0 0 80px rgba(255,255,0,0.4); }
+}
+.diag-currency {
+  font-size: 20px;
+  color: var(--neon-yellow);
+  vertical-align: top;
+  margin-top: 15px;
+  display: inline-block;
+}
+.diag-features {
+  list-style: none;
+  margin-bottom: 30px;
+}
+.diag-features li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  font-size: 11px;
+  color: var(--text-main);
+  border-bottom: 1px solid rgba(0,255,65,0.08);
+}
+.diag-features li .check { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
+.discount-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(255,0,64,0.2), rgba(255,0,64,0.1));
+  border: 1px solid var(--neon-red);
+  color: var(--neon-red);
+  padding: 6px 15px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  animation: badge-glow 2s infinite;
+}
+@keyframes badge-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255,0,64,0.3); }
+  50% { box-shadow: 0 0 15px rgba(255,0,64,0.6); }
+}
+.pay-btn {
+  display: block; width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(0,255,65,0.15), rgba(0,212,255,0.1));
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: none !important;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,255,65,0.2);
+}
+.pay-btn::before {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,255,65,0.3), transparent);
+  animation: scan 3s linear infinite;
+}
+@keyframes scan {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+.pay-btn:hover {
+  background: linear-gradient(135deg, rgba(0,255,65,0.3), rgba(0,212,255,0.2));
+  box-shadow: 0 0 30px rgba(0,255,65,0.5), 0 0 60px rgba(0,255,65,0.2);
+  transform: translateY(-2px);
+}
+
+/* RESULTS SECTION */
+.results-section { background: rgba(0,0,0,0.5); }
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3px;
+  max-width: 1400px; margin: 0 auto;
+}
+.result-folder {
+  background: var(--bg-panel);
+  border: 1px solid rgba(0,255,65,0.15);
+  padding: 25px;
+  cursor: none !important;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.result-folder::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 0; height: 0;
+  border-left: 30px solid transparent;
+  border-top: 30px solid rgba(0,255,65,0.2);
+  transition: all 0.3s;
+}
+.result-folder:hover::before {
+  border-top-color: var(--neon-green);
+}
+.result-folder:hover {
+  border-color: rgba(0,255,65,0.4);
+  box-shadow: 0 0 20px rgba(0,255,65,0.08);
+  transform: translateY(-2px);
+}
+.folder-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+  display: block;
+}
+.folder-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  color: var(--neon-green);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.folder-count {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+.folder-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 15px;
+  padding: 6px 15px;
+  background: transparent;
+  border: 1px solid rgba(0,255,65,0.2);
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 2px;
+  cursor: none !important;
+  transition: all 0.3s;
+  font-family: 'Share Tech Mono', monospace;
+}
+.folder-btn:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+/* REVIEWS */
+.reviews-track {
+  display: flex; gap: 20px;
+  overflow: hidden;
+  position: relative;
+}
+.reviews-slider {
+  display: flex; gap: 20px;
+  animation: reviews-scroll 25s linear infinite;
+}
+.reviews-slider:hover { animation-play-state: paused; }
+@keyframes reviews-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.review-card {
+  flex-shrink: 0;
+  width: 320px;
+  background: var(--bg-panel);
+  border: 1px solid rgba(0,255,65,0.15);
+  padding: 25px;
+  position: relative;
+}
+.review-card::before {
+  content: '"';
+  position: absolute;
+  top: -10px; left: 20px;
+  font-size: 60px;
+  color: rgba(0,255,65,0.1);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+.review-stars {
+  color: var(--neon-yellow);
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 5px rgba(255,255,0,0.5);
+}
+.review-text {
+  font-size: 11px;
+  color: var(--text-main);
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+.review-author {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  color: var(--neon-green);
+  letter-spacing: 1px;
+}
+.review-service {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+
+/* PARTNERS */
+.partners-section {
+  background: rgba(0,5,0,0.8);
+  border-top: 1px solid rgba(0,255,65,0.1);
+  border-bottom: 1px solid rgba(0,255,65,0.1);
+}
+.partners-track {
+  display: flex; gap: 0;
+  overflow: hidden;
+}
+.partners-slider {
+  display: flex; align-items: center; gap: 60px;
+  animation: partners-scroll 20s linear infinite;
+  padding: 0 30px;
+}
+@keyframes partners-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.partner-item {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 30px;
+  border: 1px solid rgba(0,255,65,0.1);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.partner-item:hover {
+  border-color: rgba(0,255,65,0.3);
+  box-shadow: 0 0 15px rgba(0,255,65,0.1);
+}
+.partner-icon { font-size: 24px; }
+.partner-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+.partner-name span {
+  display: block;
+  font-size: 9px;
+  color: rgba(74,122,74,0.5);
+  margin-top: 2px;
+  letter-spacing: 2px;
+}
+
+/* CONTACTS */
+.contacts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  max-width: 1200px; margin: 0 auto;
+  align-items: center;
+}
+
+.contact-item {
+  display: flex; align-items: center; gap: 20px;
+  padding: 20px;
+  border: 1px solid rgba(0,255,65,0.1);
+  margin-bottom: 2px;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: inherit;
+}
+.contact-item:hover {
+  border-color: rgba(0,255,65,0.4);
+  box-shadow: 0 0 15px rgba(0,255,65,0.1);
+  background: rgba(0,255,65,0.03);
+}
+.contact-icon { font-size: 24px; }
+.contact-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.contact-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  color: var(--neon-green);
+  letter-spacing: 1px;
+}
+.contact-map {
+  background: var(--bg-panel);
+  border: 1px solid rgba(0,255,65,0.2);
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.map-coords {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.map-location {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  color: var(--neon-green);
+  text-shadow: 0 0 8px rgba(0,255,65,0.4);
+  margin-bottom: 5px;
+}
+.map-address {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 25px;
+}
+.map-visual {
+  position: relative;
+  height: 200px;
+  border: 1px solid rgba(0,255,65,0.2);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.map-grid {
+  position: absolute; inset: 0;
+  background-image: 
+    linear-gradient(rgba(0,255,65,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,65,0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.map-pin {
+  position: relative; z-index: 2;
+  text-align: center;
+  animation: float 3s ease-in-out infinite;
+}
+.map-pin-icon { font-size: 32px; display: block; filter: drop-shadow(0 0 10px var(--neon-green)); }
+.map-pin-label {
+  font-size: 10px;
+  color: var(--neon-green);
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* FOOTER */
+footer {
+  padding: 40px;
+  border-top: 1px solid rgba(0,255,65,0.15);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 20px;
+  background: rgba(0,0,0,0.8);
+}
+.footer-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--neon-green);
+  text-shadow: 0 0 10px rgba(0,255,65,0.4);
+  letter-spacing: 2px;
+}
+.footer-text {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+.footer-social { display: flex; gap: 15px; }
+.footer-social a {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 15px;
+  border: 1px solid rgba(0,255,65,0.2);
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.footer-social a:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px rgba(0,255,65,0.2);
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(5px);
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg-dark);
+  border: 1px solid rgba(0,255,65,0.3);
+  width: 90%; max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,255,65,0.1);
+  transform: translateY(20px);
+  transition: transform 0.3s;
+}
+.modal-overlay.active .modal { transform: translateY(0); }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+}
+.modal-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 18px;
+  color: var(--neon-green);
+  text-shadow: 0 0 10px rgba(0,255,65,0.4);
+  letter-spacing: 2px;
+}
+.modal-close {
+  background: transparent;
+  border: 1px solid rgba(0,255,65,0.3);
+  color: var(--neon-green);
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  cursor: none !important;
+  transition: all 0.3s;
+}
+.modal-close:hover {
+  background: rgba(255,0,64,0.1);
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+}
+.modal-work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2px;
+}
+.modal-work-item {
+  background: rgba(0,255,65,0.03);
+  border: 1px solid rgba(0,255,65,0.1);
+  padding: 20px;
+  text-align: center;
+}
+.modal-work-item .work-icon { font-size: 32px; display: block; margin-bottom: 10px; }
+.modal-work-item .work-title {
+  font-size: 11px;
+  color: var(--text-main);
+  letter-spacing: 1px;
+  line-height: 1.5;
+}
+.modal-work-item .work-price {
+  font-size: 10px;
+  color: var(--neon-cyan);
+  margin-top: 8px;
+}
+.modal-content-list { list-style: none; }
+.modal-content-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,255,65,0.08);
+  font-size: 12px;
+  color: var(--text-main);
+}
+.modal-content-list li::before {
+  content: '›';
+  color: var(--neon-green);
+  font-size: 16px;
+}
+
+/* SCROLL INDICATOR */
+.scroll-indicator {
+  position: fixed; right: 20px; top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.scroll-dot {
+  width: 6px; height: 6px;
+  border: 1px solid rgba(0,255,65,0.3);
+  border-radius: 50%;
+  cursor: none !important;
+  transition: all 0.3s;
+}
+.scroll-dot.active {
+  background: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
+/* TERMINAL LINE */
+.terminal-line {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+.terminal-line .prompt { color: var(--neon-green); }
+.terminal-line .cmd { color: var(--neon-cyan); }
+.terminal-line .out { color: var(--text-main); }
+
+/* TYPING CURSOR */
+.typing-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--neon-green);
+  vertical-align: middle;
+  animation: blink 1s infinite;
+  box-shadow: 0 0 5px var(--neon-green);
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* FLOATING PAYMENT WIDGET */
+.float-payment {
+  position: fixed;
+  bottom: 30px; right: 30px;
+  z-index: 200;
+  background: var(--bg-dark);
+  border: 1px solid var(--neon-green);
+  padding: 20px 25px;
+  box-shadow: 0 0 30px rgba(0,255,65,0.2);
+  animation: float-in 0.5s ease-out;
+  max-width: 280px;
+  display: none;
+}
+.float-payment.visible { display: block; }
+@keyframes float-in {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.float-payment-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  color: var(--neon-green);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.float-payment-price {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px;
+  color: var(--neon-yellow);
+  text-shadow: 0 0 10px rgba(255,255,0,0.5);
+  display: flex; align-items: baseline; gap: 5px;
+  margin-bottom: 10px;
+}
+.float-payment-price small { font-size: 14px; }
+.float-payment a {
+  display: block;
+  padding: 10px;
+  background: rgba(0,255,65,0.1);
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.float-payment a:hover { background: rgba(0,255,65,0.2); }
+.float-close {
+  position: absolute; top: 8px; right: 10px;
+  background: transparent; border: none;
+  color: var(--text-dim); font-size: 16px;
+  cursor: none !important;
+  transition: color 0.2s;
+}
+.float-close:hover { color: var(--neon-red); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 12px 20px; }
+  .nav-links { display: none; }
+  section { padding: 60px 20px; }
+  .diag-container { grid-template-columns: 1fr; gap: 30px; }
+  .contacts-grid { grid-template-columns: 1fr; gap: 30px; }
+  footer { flex-direction: column; text-align: center; }
+  .hero { padding: 100px 20px 60px; }
+  .stat-item { padding: 15px 20px; }
+}
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--neon-green); box-shadow: 0 0 5px var(--neon-green); }
+
+/* FADE IN ANIMATION */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* CARD VIDEO HOVER */
+.card-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+.service-card:hover .card-video-bg { opacity: 0.22; }
+.result-folder:hover .card-video-bg { opacity: 0.28; }
+.service-card > *:not(.card-video-bg),
+.result-folder > *:not(.card-video-bg) {
+  position: relative;
+  z-index: 1;
+}
+
+/* GALLERY LINK BUTTON */
+.gallery-link-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 10px;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,255,65,0.05));
+  border: 1px solid rgba(0,212,255,0.4);
+  color: var(--neon-cyan);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: none !important;
+  transition: all 0.3s;
+  width: 100%;
+  justify-content: center;
+  margin-top: 8px;
+}
+.gallery-link-btn:hover {
+  background: rgba(0,212,255,0.15);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0,212,255,0.3);
+}
+
+/* RESULTS SECTION NAV BADGE */
+.results-gallery-cta {
+  text-align: center;
+  margin-top: 40px;
+}
+.results-gallery-cta p {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
+
+/* CARD PHOTO BG */
+.card-photo-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+.result-folder:hover .card-photo-bg { opacity: 0.25; }
+
+/* MODAL REAL MEDIA */
+.modal-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.modal-media-item {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  border: 1px solid rgba(0,255,65,0.15);
+  cursor: none !important;
+  transition: all 0.3s;
+}
+.modal-media-item:hover {
+  border-color: rgba(0,255,65,0.5);
+  box-shadow: 0 0 15px rgba(0,255,65,0.15);
+}
+.modal-media-item img,
+.modal-media-item video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+.modal-media-item:hover img,
+.modal-media-item:hover video { transform: scale(1.05); }
+
+/* LIGHTBOX */
+#lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.97);
+  z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+#lightbox.open { display: flex; }
+#lightbox-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  position: relative;
+}
+#lightbox-content img,
+#lightbox-content video {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border: 1px solid rgba(0,255,65,0.3);
+  box-shadow: 0 0 60px rgba(0,255,65,0.1);
+}
+#lightbox-close {
+  position: fixed; top: 20px; right: 25px;
+  background: transparent;
+  border: 1px solid rgba(0,255,65,0.4);
+  color: var(--neon-green);
+  font-size: 24px; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none !important;
+  z-index: 10000;
+  transition: all 0.2s;
+}
+#lightbox-close:hover { background: rgba(255,0,64,0.15); border-color: var(--neon-red); color: var(--neon-red); }
+#lightbox-caption {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+/* MOBILE HAMBURGER */
+.nav-hamburger {
+  display: none;
+  background: transparent;
+  border: 1px solid rgba(0,255,65,0.3);
+  color: var(--neon-green);
+  padding: 8px 12px;
+  font-size: 18px;
+  cursor: none !important;
+}
+@media (max-width: 768px) {
+  .nav-hamburger { display: block; }
+  .nav-links { 
+    display: none; 
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: rgba(2,12,2,0.98);
+    flex-direction: column; gap: 0;
+    border-bottom: 1px solid rgba(0,255,65,0.2);
+    backdrop-filter: blur(15px);
+    padding: 10px 0;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 12px 20px; border: none; border-bottom: 1px solid rgba(0,255,65,0.08); }
+}
+</style>
+</head>
+<body>
+
+<!-- CANVAS BACKGROUNDS -->
+<canvas id="matrix-bg"></canvas>
+<canvas id="lightning-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:3;pointer-events:none;"></canvas>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ПроТех<span>Сервис</span></div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Меню">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="#services">Услуги</a>
+    <a href="#diagnostic">Диагностика</a>
+    <a href="#results">Результаты</a>
+    <a href="#reviews">Отзывы</a>
+    <a href="#contacts">Контакты</a>
+    <a href="results.html" target="_blank" rel="noopener noreferrer" style="color:var(--neon-cyan);border-color:rgba(0,212,255,0.3);">📸 Галерея работ</a>
+  </div>
+</nav>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <span class="status-scroll">
+    ▸ СИСТЕМА ОНЛАЙН &nbsp;|&nbsp; ТАМБОВ, УЛ. БАСТИОННАЯ 24Ж &nbsp;|&nbsp; РЕМОНТ ТЕЛЕФОНОВ ✓ &nbsp;|&nbsp; НОУТБУКИ ✓ &nbsp;|&nbsp; ПЛАНШЕТЫ ✓ &nbsp;|&nbsp; ИГРОВЫЕ КОНСОЛИ ✓ &nbsp;|&nbsp; РАЗБЛОКИРОВКА ✓ &nbsp;|&nbsp; FRP ОБХОД ✓ &nbsp;|&nbsp; EMMC ✓ &nbsp;|&nbsp; ГАРАНТИЯ НА ВСЕ РАБОТЫ &nbsp;|&nbsp; @ProTehServis &nbsp;|&nbsp; ▸ СИСТЕМА ОНЛАЙН &nbsp;|&nbsp; ТАМБОВ, УЛ. БАСТИОННАЯ 24Ж &nbsp;|&nbsp; РЕМОНТ ТЕЛЕФОНОВ ✓ &nbsp;|&nbsp; НОУТБУКИ ✓
+  </span>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр медиа">
+  <button id="lightbox-close" aria-label="Закрыть">✕</button>
+  <div id="lightbox-content"></div>
+  <div id="lightbox-caption"></div>
+</div>
+
+<!-- FLOAT PAYMENT -->
+<div class="float-payment" id="floatPayment">
+  <button class="float-close" onclick="document.getElementById('floatPayment').classList.remove('visible')">✕</button>
+  <div class="float-payment-title">⚡ ДИАГНОСТИКА</div>
+  <div class="float-payment-price">500 <small>₽</small></div>
+  <a href="https://app.lava.top/products/0ff47d11-a7be-40be-a29d-edfbcb06d7f0" target="_blank" rel="noopener noreferrer">ОПЛАТИТЬ → СКИДКА 15%</a>
+</div>
+
+<div class="content-wrapper">
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-badge">// СЕРВИСНЫЙ ЦЕНТР ТАМБОВ //</div>
+  <h1 class="hero-title glitch" data-text="ПроТехСервис">ПроТехСервис</h1>
+  <div class="hero-subtitle">РЕМОНТ ТЕХНИКИ НОВОГО ПОКОЛЕНИЯ</div>
+  <p class="hero-desc">
+    Профессиональный ремонт устройств в <span>Тамбове</span>.<br>
+    Работаем быстро. Гарантируем качество. Защищаем данные.
+  </p>
+  <div class="terminal-line" style="margin-bottom:30px;">
+    <span class="prompt">root@ProTehServis:~$</span> <span class="cmd">scanning device...</span> <span class="out">PROBLEM_DETECTED → SOLUTION_FOUND</span> <span class="typing-cursor"></span>
+  </div>
+  <div class="cta-group">
+    <a href="#diagnostic" class="btn-primary">⚡ Диагностика 500₽</a>
+    <a href="#services" class="btn-secondary">→ Наши услуги</a>
+  </div>
+  <div class="stats-row fade-in">
+    <div class="stat-item">
+      <span class="stat-number" data-count="1200">0</span>
+      <span class="stat-label">Ремонтов</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" data-count="5">0</span>
+      <span class="stat-label">Лет опыта</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" data-count="98">0</span>
+      <span class="stat-label">% довольных</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" data-count="1">0</span>
+      <span class="stat-label">Год гарантии</span>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-header fade-in">
+    <span class="section-tag">// УСЛУГИ //</span>
+    <h2 class="section-title glitch" data-text="РЕМОНТ ТЕХНИКИ">РЕМОНТ <span class="accent">ТЕХНИКИ</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="services-grid">
+
+    <div class="service-card fade-in" onclick="openModal('phones')">
+      <video class="card-video-bg" data-src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop playsinline></video>
+      <span class="service-num">01</span>
+      <span class="service-icon">📱</span>
+      <div class="service-title">Ремонт телефонов</div>
+      <div class="service-desc">Замена экранов, аккумуляторов, камер, разъёмов. Восстановление после падений и воды. iPhone, Samsung, Xiaomi, Huawei и любые другие.</div>
+      <div class="service-price">от 500₽ • срок: 1-24 часа</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" onclick="openModal('tablets')">
+      <video class="card-video-bg" data-src="%D0%A1%D0%B2%D0%B0%D0%BF%20(%D0%9B%D1%8E%D0%B1%D0%B0%D1%8F%20%D0%B7%D0%B0%D0%BC%D0%B5%D0%BD%D0%B0%20%D0%BA%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D0%B0%20%D0%BD%D0%B0%20%D0%B4%D1%80%D1%83%D0%B3%D0%BE%D0%B9)/Two_smartphone_logic_202603221154.mp4" muted loop playsinline></video>
+      <span class="service-num">02</span>
+      <span class="service-icon">📲</span>
+      <div class="service-title">Планшеты</div>
+      <div class="service-desc">Ремонт и замена дисплеев, тачскринов, аккумуляторов. iPad, Samsung Galaxy Tab, Lenovo, Huawei MatePad.</div>
+      <div class="service-price">от 700₽ • срок: 1-3 дня</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" onclick="openModal('laptops')">
+      <video class="card-video-bg" data-src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop playsinline></video>
+      <span class="service-num">03</span>
+      <span class="service-icon">💻</span>
+      <div class="service-title">Ноутбуки / ПК</div>
+      <div class="service-desc">Замена матриц, клавиатур, кулеров. Чистка от пыли, замена термопасты. Апгрейд RAM и SSD. Любые марки.</div>
+      <div class="service-price">от 600₽ • срок: 1-5 дней</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" onclick="openModal('consoles')">
+      <span class="service-num">04</span>
+      <span class="service-icon">🎮</span>
+      <div class="service-title">Игровые консоли</div>
+      <div class="service-desc">Ремонт PlayStation, Xbox, Nintendo Switch. Замена джойстиков, дисководов, разъёмов HDMI. Чистка и смазка механизмов.</div>
+      <div class="service-price">от 800₽ • срок: 1-3 дня</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" onclick="openModal('unlock')">
+      <video class="card-video-bg" data-src="%D0%A0%D0%B0%D0%B7%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0%20ICLOUD/Smartphone_screen_opening_202603221154.mp4" muted loop playsinline></video>
+      <span class="service-num">05</span>
+      <span class="service-icon">🔓</span>
+      <div class="service-title">Разблокировка</div>
+      <div class="service-desc">Разблокировка после скама, без потери данных (Android). Снятие FRP-защиты Google. Разблокировка iCloud. IMEI-разблокировка.</div>
+      <div class="service-price">от 1000₽ • срок: 1-24 часа</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" onclick="openModal('emmc')">
+      <video class="card-video-bg" data-src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop playsinline></video>
+      <span class="service-num">06</span>
+      <span class="service-icon">💾</span>
+      <div class="service-title">EMMC / Автомузыка</div>
+      <div class="service-desc">Перепрошивка и замена EMMC чипов. Ремонт и прошивка автомобильных магнитол, GPS-навигаторов и головных устройств.</div>
+      <div class="service-price">от 1500₽ • срок: 1-5 дней</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" onclick="openModal('small')">
+      <video class="card-video-bg" data-src="FRP%20%D0%9E%D0%B1%D1%85%D0%BE%D0%B4%20%D0%B0%D0%BA%D0%BA%D0%B0%D1%83%D0%BD%D1%82%D0%BE%D0%B2%20Google/Smartphone_connected_to_202603221155.mp4" muted loop playsinline></video>
+      <span class="service-num">07</span>
+      <span class="service-icon">🔧</span>
+      <div class="service-title">Мелкая техника</div>
+      <div class="service-desc">Ремонт умных часов, фитнес-браслетов, беспроводных наушников, электросамокатов и другой портативной электроники.</div>
+      <div class="service-price">от 400₽ • срок: 1-3 дня</div>
+      <button class="service-btn">► Смотреть работы</button>
+    </div>
+
+    <div class="service-card fade-in" style="background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,255,65,0.03)); border-color: rgba(0,212,255,0.2);">
+      <span class="service-num">08</span>
+      <span class="service-icon">⚡</span>
+      <div class="service-title" style="color:var(--neon-cyan);">Срочный ремонт</div>
+      <div class="service-desc">Выезд мастера или максимально быстрое выполнение. Приоритетная очередь, работа в выходные дни.</div>
+      <div class="service-price" style="color:var(--neon-yellow);">+50% к стоимости • в течение 2 часов</div>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="service-btn" style="border-color:rgba(0,212,255,0.3);color:var(--neon-cyan);">► Написать в Telegram</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- DIAGNOSTIC -->
+<section class="diag-section" id="diagnostic">
+  <div class="diag-container">
+    <div class="diag-text fade-in">
+      <h2>Почему диагностика <span class="price">500₽</span>, а не бесплатно?</h2>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">
+        Мы могли бы сделать диагностику бесплатной — но это значило бы поверхностный осмотр. Мы так не работаем.
+      </p>
+      <ul class="diag-reasons">
+        <li>Полная диагностика на профессиональном оборудовании — выявляем ВСЕ проблемы, включая скрытые</li>
+        <li>Письменное заключение с описанием неисправностей и причин возникновения</li>
+        <li>Точная стоимость ремонта БЕЗ скрытых платежей после оплаты диагностики</li>
+        <li>Диагностика входит в стоимость ремонта — при заказе работ вы платите только за ремонт</li>
+        <li>Скидка 15% на любую услугу — диагностика окупается мгновенно</li>
+        <li>Гарантия на выводы — если нашли проблему, точно исправим её</li>
+      </ul>
+      <div class="terminal-line">
+        <span class="prompt">$</span> <span class="cmd">calculate_savings</span><br>
+        <span class="out">→ Стоимость ремонта: 3000₽</span><br>
+        <span class="out">→ Скидка 15%: -450₽</span><br>
+        <span class="out">→ Итого: <span style="color:var(--neon-green)">2550₽ (экономия 450₽ ≫ 500₽ за диагностику)</span></span>
+      </div>
+    </div>
+    <div class="diag-card fade-in">
+      <div class="diag-price-display">
+        <div class="diag-old-price">Обычная цена: 1500₽</div>
+        <span class="diag-main-price"><span class="diag-currency">₽</span>500</span>
+        <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-top:5px;">ПОЛНАЯ ДИАГНОСТИКА</div>
+      </div>
+      <div class="discount-badge">🔥 СКИДКА 15% НА РЕМОНТ В ПОДАРОК</div>
+      <ul class="diag-features">
+        <li><span class="check">✓</span> Диагностика на оборудовании</li>
+        <li><span class="check">✓</span> Выявление всех проблем</li>
+        <li><span class="check">✓</span> Письменное заключение</li>
+        <li><span class="check">✓</span> Точная стоимость ремонта</li>
+        <li><span class="check">✓</span> Скидка 15% при заказе</li>
+        <li><span class="check">✓</span> Гарантия на работы</li>
+      </ul>
+      <a href="https://app.lava.top/products/0ff47d11-a7be-40be-a29d-edfbcb06d7f0" target="_blank" rel="noopener noreferrer" class="pay-btn">
+        ⚡ ОПЛАТИТЬ ДИАГНОСТИКУ →
+      </a>
+      <p style="font-size:9px;color:var(--text-dim);text-align:center;margin-top:15px;letter-spacing:1px;">Безопасная оплата через LAVA · Возврат если не приедете</p>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results-section" id="results">
+  <div class="section-header fade-in">
+    <span class="section-tag">// НАШИ РАБОТЫ //</span>
+    <h2 class="section-title">РЕЗУЛЬТАТЫ <span class="accent">РЕМОНТОВ</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="results-grid">
+    <div class="result-folder fade-in" onclick="openModal('reballing')">
+      <video class="card-video-bg" data-src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop playsinline></video>
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">РЕБОЛЛИНГ (BGA)</div>
+      <div class="folder-count">// ВИДЕО ПРОЦЕССА //</div>
+      <button class="folder-btn">ПОДРОБНЕЕ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('swap-honor')">
+      <img class="card-photo-bg" data-src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20HONOR/2026-03-22%2011.58.57.jpg" alt="Свап Honor" loading="lazy">
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">СВАП HONOR</div>
+      <div class="folder-count">// 4 ФОТО РАБОТ //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('swap-iphone')">
+      <img class="card-photo-bg" data-src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20IPHONE/2026-03-22%2012.13.37.jpg" alt="Свап iPhone" loading="lazy">
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">СВАП IPHONE</div>
+      <div class="folder-count">// 3 ФОТО РАБОТ //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('unlock-icloud')">
+      <video class="card-video-bg" data-src="%D0%A0%D0%B0%D0%B7%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0%20ICLOUD/Smartphone_screen_opening_202603221154.mp4" muted loop playsinline></video>
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">РАЗБЛОКИРОВКА ICLOUD</div>
+      <div class="folder-count">// ВИДЕО ПРОЦЕССА //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('memory')">
+      <video class="card-video-bg" data-src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop playsinline></video>
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">УВЕЛИЧЕНИЕ ПАМЯТИ</div>
+      <div class="folder-count">// ВИДЕО + 4 ФОТО //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('frp')">
+      <video class="card-video-bg" data-src="FRP%20%D0%9E%D0%B1%D1%85%D0%BE%D0%B4%20%D0%B0%D0%BA%D0%BA%D0%B0%D1%83%D0%BD%D1%82%D0%BE%D0%B2%20Google/Smartphone_connected_to_202603221155.mp4" muted loop playsinline></video>
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">FRP ОБХОД GOOGLE</div>
+      <div class="folder-count">// ВИДЕО ПРОЦЕССА //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('processes')">
+      <img class="card-photo-bg" data-src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9F%D0%95%D0%A0%D0%95%D0%9A%D0%90%D0%A2%20%D0%9F%D0%A0%D0%9E%D0%A6%D0%95%D0%A1%D0%A1%D0%9E%D0%92/2026-03-22%2012.11.38.jpg" alt="Перекат процессов" loading="lazy">
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">ПЕРЕКАТ ПРОЦЕССОВ</div>
+      <div class="folder-count">// 3 ФОТО РАБОТ //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+    <div class="result-folder fade-in" onclick="openModal('nakatta')">
+      <video class="card-video-bg" data-src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9D%D0%90%D0%9A%D0%90%D0%A2%D0%9A%D0%90%20%D0%A0%D0%95%D0%91%D0%9E%D0%9B%D0%9B%D0%98%D0%9D%D0%93/IMG_2349.MP4" muted loop playsinline></video>
+      <span class="folder-icon">📁</span>
+      <div class="folder-name">НАКАТКА РЕБОЛЛИНГ</div>
+      <div class="folder-count">// ВИДЕО ПРОЦЕССА //</div>
+      <button class="folder-btn">СМОТРЕТЬ →</button>
+    </div>
+  </div>
+  <div class="results-gallery-cta fade-in">
+    <p>// ВСЕ ЖИВЫЕ ФОТО И ВИДЕО РАБОТ В ГАЛЕРЕЕ //</p>
+    <a href="results.html" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="display:inline-flex;">
+      📸 ОТКРЫТЬ ПОЛНУЮ ГАЛЕРЕЮ РАБОТ →
+    </a>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="section-header fade-in">
+    <span class="section-tag">// ОТЗЫВЫ КЛИЕНТОВ //</span>
+    <h2 class="section-title">ЧТО ГОВОРЯТ <span class="accent">КЛИЕНТЫ</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="reviews-track fade-in">
+    <div class="reviews-slider" id="reviewsSlider">
+      <!-- Reviews set 1 -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Сдавал iPhone после падения в воду. Думал всё — кирпич. Мастера подняли телефон за сутки, все данные сохранены. Цена адекватная, объяснили всё доступно.</div>
+        <div class="review-author">АЛЕКСЕЙ К.</div>
+        <div class="review-service">// Ремонт iPhone после воды //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Понадобилась разблокировка телефона после покупки — попался скам. Обратился в ПроТехСервис, разблокировали за несколько часов без потери данных. Реально крутые спецы.</div>
+        <div class="review-author">ДМИТРИЙ В.</div>
+        <div class="review-service">// Разблокировка Android //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Ноутбук начал тормозить и перегреваться. После чистки и замены термопасты работает как новый. Заодно поставили SSD — разница огромная. Рекомендую всем!</div>
+        <div class="review-author">МАРИНА С.</div>
+        <div class="review-service">// Чистка ноутбука + SSD //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★☆</div>
+        <div class="review-text">Разбил экран на Samsung — поменяли за 3 часа. Качество дисплея отличное, цена честная. Диагностика показала ещё проблему с батареей — хорошо что заметили.</div>
+        <div class="review-author">НИКОЛАЙ Р.</div>
+        <div class="review-service">// Замена экрана Samsung //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">PlayStation 5 перестал читать диски. Починили в 2 дня, стоимость бюджетная. Объяснили причину поломки и как её избежать в будущем. Очень профессионально.</div>
+        <div class="review-author">ИГОРЬ М.</div>
+        <div class="review-service">// Ремонт PlayStation 5 //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Магнитола в машине не включалась. Привезли — нашли проблему с прошивкой и залили новую. Теперь работает идеально + добавили CarPlay. Отличный сервис!</div>
+        <div class="review-author">СЕРГЕЙ П.</div>
+        <div class="review-service">// Прошивка автомагнитолы //</div>
+      </div>
+      <!-- Reviews set 2 (duplicate for infinite scroll) -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Сдавал iPhone после падения в воду. Думал всё — кирпич. Мастера подняли телефон за сутки, все данные сохранены. Цена адекватная, объяснили всё доступно.</div>
+        <div class="review-author">АЛЕКСЕЙ К.</div>
+        <div class="review-service">// Ремонт iPhone после воды //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Понадобилась разблокировка телефона после покупки — попался скам. Обратились в ПроТехСервис, разблокировали за несколько часов без потери данных. Реально крутые спецы.</div>
+        <div class="review-author">ДМИТРИЙ В.</div>
+        <div class="review-service">// Разблокировка Android //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Ноутбук начал тормозить и перегреваться. После чистки и замены термопасты работает как новый. Заодно поставили SSD — разница огромная. Рекомендую всем!</div>
+        <div class="review-author">МАРИНА С.</div>
+        <div class="review-service">// Чистка ноутбука + SSD //</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">PlayStation 5 перестал читать диски. Починили в 2 дня, стоимость бюджетная. Объяснили причину поломки и как её избежать в будущем. Очень профессионально.</div>
+        <div class="review-author">ИГОРЬ М.</div>
+        <div class="review-service">// Ремонт PlayStation 5 //</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="partners-section" id="partners">
+  <div class="section-header fade-in" style="margin-bottom:30px;">
+    <span class="section-tag">// ДОВЕРЯЮТ В НИШЕ //</span>
+    <h2 class="section-title">ПОПУЛЯРНЫЕ <span class="accent">ПАРТНЁРЫ</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="partners-track fade-in">
+    <div class="partners-slider">
+      <div class="partner-item"><span class="partner-icon">🍎</span><div class="partner-name">Apple<span>CERTIFIED REPAIR</span></div></div>
+      <div class="partner-item"><span class="partner-icon">📱</span><div class="partner-name">Samsung<span>SERVICE PARTNER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">📡</span><div class="partner-name">Xiaomi<span>AUTHORIZED</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🎮</span><div class="partner-name">PlayStation<span>SERVICE CENTER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🟢</span><div class="partner-name">Xbox<span>REPAIR NETWORK</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🔵</span><div class="partner-name">Huawei<span>TRUSTED PARTNER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">💻</span><div class="partner-name">Lenovo<span>SERVICE POINT</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🔴</span><div class="partner-name">HP<span>REPAIR CENTER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🟡</span><div class="partner-name">ASUS<span>SERVICE PARTNER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🎯</span><div class="partner-name">Авито<span>VERIFIED SELLER</span></div></div>
+      <!-- Duplicate -->
+      <div class="partner-item"><span class="partner-icon">🍎</span><div class="partner-name">Apple<span>CERTIFIED REPAIR</span></div></div>
+      <div class="partner-item"><span class="partner-icon">📱</span><div class="partner-name">Samsung<span>SERVICE PARTNER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">📡</span><div class="partner-name">Xiaomi<span>AUTHORIZED</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🎮</span><div class="partner-name">PlayStation<span>SERVICE CENTER</span></div></div>
+      <div class="partner-item"><span class="partner-icon">🟢</span><div class="partner-name">Xbox<span>REPAIR NETWORK</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTS -->
+<section id="contacts">
+  <div class="section-header fade-in">
+    <span class="section-tag">// КОНТАКТЫ //</span>
+    <h2 class="section-title">НАЙТИ <span class="accent">НАС</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="contacts-grid">
+    <div class="contact-info fade-in">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="contact-item">
+        <span class="contact-icon">✈️</span>
+        <div>
+          <div class="contact-label">Telegram</div>
+          <div class="contact-value">@ProTehServis</div>
+        </div>
+      </a>
+      <a href="https://vk.ru/club228452491" target="_blank" rel="noopener noreferrer" class="contact-item">
+        <span class="contact-icon">🔵</span>
+        <div>
+          <div class="contact-label">ВКонтакте</div>
+          <div class="contact-value">vk.ru/club228452491</div>
+        </div>
+      </a>
+      <a href="https://www.avito.ru/brands/12ee3df534cdb6634639bf700d0796c2" target="_blank" rel="noopener noreferrer" class="contact-item">
+        <span class="contact-icon">🟢</span>
+        <div>
+          <div class="contact-label">Авито</div>
+          <div class="contact-value">ПроТехСервис на Авито</div>
+        </div>
+      </a>
+      <div class="contact-item">
+        <span class="contact-icon">📍</span>
+        <div>
+          <div class="contact-label">Адрес</div>
+          <div class="contact-value">Тамбов, ул. Бастионная 24ж</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="contact-icon">🕐</span>
+        <div>
+          <div class="contact-label">Режим работы</div>
+          <div class="contact-value">Пн–Сб 09:00–20:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-map fade-in">
+      <div class="map-coords">// 52.7212° N, 41.4523° E //</div>
+      <div class="map-location">ТАМБОВ</div>
+      <div class="map-address">ул. Бастионная 24ж</div>
+      <div class="map-visual">
+        <div class="map-grid"></div>
+        <div class="map-pin">
+          <span class="map-pin-icon">📍</span>
+          <div class="map-pin-label">ПроТехСервис</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="margin-bottom:10px;display:block;">
+          ⚡ НАПИСАТЬ В TELEGRAM →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ПроТех<span style="color:var(--neon-cyan)">Сервис</span></div>
+  <div class="footer-text">© 2026 ПроТехСервис · Тамбов, ул. Бастионная 24ж<br><span style="font-size:9px;color:rgba(74,122,74,0.4)">// ALL SYSTEMS OPERATIONAL //</span></div>
+  <div class="footer-social">
+    <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer">TG</a>
+    <a href="https://vk.ru/club228452491" target="_blank" rel="noopener noreferrer">VK</a>
+    <a href="https://www.avito.ru/brands/12ee3df534cdb6634639bf700d0796c2" target="_blank" rel="noopener noreferrer">AV</a>
+    <a href="results.html" target="_blank" rel="noopener noreferrer" style="border-color:rgba(0,212,255,0.3);color:var(--neon-cyan);">📸</a>
+  </div>
+</footer>
+
+</div><!-- end content-wrapper -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-phones">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📱 РЕМОНТ ТЕЛЕФОНОВ</div>
+      <button class="modal-close" onclick="closeModal('phones')">✕</button>
+    </div>
+    <div class="modal-work-grid">
+      <div class="modal-work-item"><span class="work-icon">🔋</span><div class="work-title">Замена аккумулятора</div><div class="work-price">от 500₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">📺</span><div class="work-title">Замена экрана / тачскрина</div><div class="work-price">от 800₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">📷</span><div class="work-title">Замена камеры</div><div class="work-price">от 700₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🔌</span><div class="work-title">Замена разъёма зарядки</div><div class="work-price">от 600₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">💧</span><div class="work-title">Ремонт после воды</div><div class="work-price">от 1000₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🔊</span><div class="work-title">Замена динамика / микрофона</div><div class="work-price">от 500₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">📶</span><div class="work-title">Ремонт сети / Wi-Fi</div><div class="work-price">от 1200₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🏠</span><div class="work-title">Замена корпуса</div><div class="work-price">от 900₽</div></div>
+    </div>
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(0,255,65,0.1);">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-tablets">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📲 РЕМОНТ ПЛАНШЕТОВ</div>
+      <button class="modal-close" onclick="closeModal('tablets')">✕</button>
+    </div>
+    <ul class="modal-content-list">
+      <li>Замена дисплея и тачскрина (iPad, Samsung, Lenovo) — от 1200₽</li>
+      <li>Замена аккумулятора — от 800₽</li>
+      <li>Ремонт разъёма зарядки — от 700₽</li>
+      <li>Восстановление после падений — от 1000₽</li>
+      <li>Ремонт после воды — от 1500₽</li>
+      <li>Замена кнопок — от 500₽</li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-laptops">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💻 НОУТБУКИ / ПК</div>
+      <button class="modal-close" onclick="closeModal('laptops')">✕</button>
+    </div>
+    <div class="modal-work-grid">
+      <div class="modal-work-item"><span class="work-icon">🖥️</span><div class="work-title">Замена матрицы</div><div class="work-price">от 2500₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">⌨️</span><div class="work-title">Замена клавиатуры</div><div class="work-price">от 1200₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🌀</span><div class="work-title">Чистка от пыли</div><div class="work-price">от 600₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">💾</span><div class="work-title">Установка SSD</div><div class="work-price">от 800₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🧠</span><div class="work-title">Апгрейд RAM</div><div class="work-price">от 600₽</div></div>
+      <div class="modal-work-item"><span class="work-icon">🔋</span><div class="work-title">Замена аккумулятора</div><div class="work-price">от 1500₽</div></div>
+    </div>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-consoles">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🎮 ИГРОВЫЕ КОНСОЛИ</div>
+      <button class="modal-close" onclick="closeModal('consoles')">✕</button>
+    </div>
+    <ul class="modal-content-list">
+      <li>PlayStation 4/5 — ремонт разъёма HDMI, дисковода — от 1500₽</li>
+      <li>Xbox Series X/S, One — ремонт и чистка — от 1200₽</li>
+      <li>Nintendo Switch — замена джойстиков (дрейф) — от 800₽</li>
+      <li>Ремонт кнопок и триггеров — от 600₽</li>
+      <li>Замена термопасты — от 500₽</li>
+      <li>Восстановление после воды — от 1800₽</li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-unlock">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔓 РАЗБЛОКИРОВКА</div>
+      <button class="modal-close" onclick="closeModal('unlock')">✕</button>
+    </div>
+    <ul class="modal-content-list">
+      <li>Разблокировка после скама — восстановление доступа — от 1000₽</li>
+      <li>Разблокировка Android без потери данных — от 1200₽</li>
+      <li>FRP обход защиты Google — от 1000₽</li>
+      <li>Разблокировка iCloud (Activation Lock) — от 2000₽</li>
+      <li>IMEI разблокировка (сетевая) — от 1500₽</li>
+      <li>Сброс пароля / паттерна — от 800₽</li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Уточнить в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-emmc">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💾 EMMC / АВТОМУЗЫКА</div>
+      <button class="modal-close" onclick="closeModal('emmc')">✕</button>
+    </div>
+    <ul class="modal-content-list">
+      <li>Перепрошивка EMMC — восстановление данных — от 1500₽</li>
+      <li>Замена EMMC чипа — от 3000₽</li>
+      <li>Ремонт автомобильных магнитол — от 1200₽</li>
+      <li>Прошивка головных устройств — от 1500₽</li>
+      <li>GPS навигаторы — от 1000₽</li>
+      <li>Установка Android Auto / CarPlay — от 2000₽</li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Уточнить в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-small">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔧 МЕЛКАЯ ТЕХНИКА</div>
+      <button class="modal-close" onclick="closeModal('small')">✕</button>
+    </div>
+    <ul class="modal-content-list">
+      <li>Умные часы (Apple Watch, Samsung, Xiaomi) — от 600₽</li>
+      <li>Беспроводные наушники — от 400₽</li>
+      <li>Фитнес-браслеты — от 400₽</li>
+      <li>Электросамокаты — от 800₽</li>
+      <li>Умные колонки — от 600₽</li>
+      <li>Портативные зарядки (Power Bank) — от 400₽</li>
+    </ul>
+    <div style="margin-top:20px;">
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<!-- Result modals -->
+<div class="modal-overlay" id="modal-reballing">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📁 РЕБОЛЛИНГ (BGA)</div>
+      <button class="modal-close" onclick="closeModal('reballing')">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Реболлинг — восстановление BGA-чипов. Профессиональное оборудование для удаления и замены шаровых контактов.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)">
+        <video src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop autoplay playsinline data-caption="Реболлинг — процесс работы"></video>
+      </div>
+    </div>
+    <ul class="modal-content-list">
+      <li>Восстановление чипов видеокарт ноутбуков (NVIDIA, AMD)</li>
+      <li>Реболлинг процессоров телефонов</li>
+      <li>Восстановление звуковых чипов</li>
+      <li>Ремонт контроллеров питания</li>
+    </ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#reballing" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Записаться</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-swap-honor">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📁 СВАП HONOR</div>
+      <button class="modal-close" onclick="closeModal('swap-honor')">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Свап-ремонт Honor — замена основных узлов с сохранением всех данных. Оригинальные и качественные OEM-запчасти.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20HONOR/2026-03-22%2011.58.57.jpg" alt="Свап Honor 1" loading="lazy" data-caption="Свап Honor — этап 1"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20HONOR/2026-03-22%2011.59.15.jpg" alt="Свап Honor 2" loading="lazy" data-caption="Свап Honor — этап 2"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20HONOR/2026-03-22%2011.59.21.jpg" alt="Свап Honor 3" loading="lazy" data-caption="Свап Honor — этап 3"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20HONOR/2026-03-22%2011.59.26.jpg" alt="Свап Honor 4" loading="lazy" data-caption="Свап Honor — результат"></div>
+    </div>
+    <ul class="modal-content-list">
+      <li>Honor 10, 20, 30, 50, 70 серии</li>
+      <li>Восстановление корпуса до заводского вида</li>
+      <li>Перенос данных при свапе</li>
+    </ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#swap-honor" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Записаться</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-swap-iphone">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📁 СВАП IPHONE</div>
+      <button class="modal-close" onclick="closeModal('swap-iphone')">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Свап iPhone — полная замена узлов при тяжёлых повреждениях. Сохраняем ваши данные, Face ID и платёжные карты.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20IPHONE/2026-03-22%2012.13.37.jpg" alt="Свап iPhone 1" loading="lazy" data-caption="Свап iPhone — этап 1"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20IPHONE/2026-03-22%2012.13.42.jpg" alt="Свап iPhone 2" loading="lazy" data-caption="Свап iPhone — этап 2"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A1%D0%92%D0%90%D0%9F%20IPHONE/2026-03-22%2012.13.48.jpg" alt="Свап iPhone 3" loading="lazy" data-caption="Свап iPhone — результат"></div>
+    </div>
+    <ul class="modal-content-list">
+      <li>iPhone 11, 12, 13, 14, 15 серии</li>
+      <li>Замена корпуса с сохранением Face ID</li>
+      <li>Перенос NAND с данными</li>
+    </ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#swap-iphone" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Записаться</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-unlock-icloud">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📁 РАЗБЛОКИРОВКА ICLOUD</div><button class="modal-close" onclick="closeModal('unlock-icloud')">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Снятие Activation Lock — разблокировка iPhone/iPad от привязки к чужому Apple ID. Работаем официальными методами.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)">
+        <video src="%D0%A0%D0%B0%D0%B7%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0%20ICLOUD/Smartphone_screen_opening_202603221154.mp4" muted loop autoplay playsinline data-caption="Разблокировка iCloud — процесс"></video>
+      </div>
+    </div>
+    <ul class="modal-content-list"><li>Разблокировка через официальные каналы</li><li>Снятие MDM-профилей</li><li>Восстановление доступа к аккаунту</li></ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#unlock-icloud" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Уточнить стоимость</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-memory">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📁 УВЕЛИЧЕНИЕ ПАМЯТИ</div><button class="modal-close" onclick="closeModal('memory')">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Программное и аппаратное увеличение памяти устройств. Телефоны Android, ноутбуки, планшеты.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)">
+        <video src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop autoplay playsinline data-caption="NAND чип — увеличение памяти"></video>
+      </div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A3%D0%92%D0%95%D0%9B%D0%98%D0%A7%D0%95%D0%9D%D0%98%D0%95%20%D0%9F%D0%90%D0%9C%D0%AF%D0%A2%D0%98/2026-03-22%2012.12.59.jpg" alt="Память 1" loading="lazy" data-caption="Увеличение памяти — этап 1"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A3%D0%92%D0%95%D0%9B%D0%98%D0%A7%D0%95%D0%9D%D0%98%D0%95%20%D0%9F%D0%90%D0%9C%D0%AF%D0%A2%D0%98/2026-03-22%2012.13.06.jpg" alt="Память 2" loading="lazy" data-caption="Увеличение памяти — этап 2"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A3%D0%92%D0%95%D0%9B%D0%98%D0%A7%D0%95%D0%9D%D0%98%D0%95%20%D0%9F%D0%90%D0%9C%D0%AF%D0%A2%D0%98/2026-03-22%2012.13.13.jpg" alt="Память 3" loading="lazy" data-caption="Увеличение памяти — этап 3"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A3%D0%92%D0%95%D0%9B%D0%98%D0%A7%D0%95%D0%9D%D0%98%D0%95%20%D0%9F%D0%90%D0%9C%D0%AF%D0%A2%D0%98/2026-03-22%2012.13.17.jpg" alt="Память 4" loading="lazy" data-caption="Увеличение памяти — результат"></div>
+    </div>
+    <ul class="modal-content-list"><li>Замена EMMC/UFS чипов на большую ёмкость</li><li>Установка SSD в ноутбук вместо HDD</li><li>Апгрейд RAM ноутбука</li></ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#memory" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Рассчитать стоимость</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-frp">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📁 FRP ОБХОД GOOGLE</div><button class="modal-close" onclick="closeModal('frp')">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Factory Reset Protection — снятие привязки к Google-аккаунту после сброса настроек.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)">
+        <video src="FRP%20%D0%9E%D0%B1%D1%85%D0%BE%D0%B4%20%D0%B0%D0%BA%D0%BA%D0%B0%D1%83%D0%BD%D1%82%D0%BE%D0%B2%20Google/Smartphone_connected_to_202603221155.mp4" muted loop autoplay playsinline data-caption="FRP обход — процесс работы"></video>
+      </div>
+    </div>
+    <ul class="modal-content-list"><li>Samsung — все серии (A, S, M, Note)</li><li>Xiaomi, Redmi, POCO</li><li>Huawei, Honor</li><li>Realme, OPPO, Vivo</li><li>LG, Motorola и другие</li></ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#frp" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Узнать цену</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-processes">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📁 ПЕРЕКАТ ПРОЦЕССОВ</div><button class="modal-close" onclick="closeModal('processes')">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Перекат процессора — сложная микропайка при отрыве или повреждении процессорного чипа.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9F%D0%95%D0%A0%D0%95%D0%9A%D0%90%D0%A2%20%D0%9F%D0%A0%D0%9E%D0%A6%D0%95%D0%A1%D0%A1%D0%9E%D0%92/2026-03-22%2012.11.38.jpg" alt="Перекат 1" loading="lazy" data-caption="Перекат процессоров — этап 1"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9F%D0%95%D0%A0%D0%95%D0%9A%D0%90%D0%A2%20%D0%9F%D0%A0%D0%9E%D0%A6%D0%95%D0%A1%D0%A1%D0%9E%D0%92/2026-03-22%2012.11.47.jpg" alt="Перекат 2" loading="lazy" data-caption="Перекат процессоров — этап 2"></div>
+      <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9F%D0%95%D0%A0%D0%95%D0%9A%D0%90%D0%A2%20%D0%9F%D0%A0%D0%9E%D0%A6%D0%95%D0%A1%D0%A1%D0%9E%D0%92/2026-03-22%2012.11.51.jpg" alt="Перекат 3" loading="lazy" data-caption="Перекат процессоров — результат"></div>
+    </div>
+    <ul class="modal-content-list"><li>Повторная пайка процессора</li><li>Восстановление контактных площадок</li><li>Тестирование под нагрузкой</li></ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#processes" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Диагностика и оценка</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-nakatta">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📁 НАКАТКА РЕБОЛЛИНГ</div><button class="modal-close" onclick="closeModal('nakatta')">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Накатка новых шаров на BGA-чипы с применением специализированных трафаретов и паяльной пасты.</p>
+    <div class="modal-media-grid">
+      <div class="modal-media-item" onclick="openLightbox(this)">
+        <video src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9D%D0%90%D0%9A%D0%90%D0%A2%D0%9A%D0%90%20%D0%A0%D0%95%D0%91%D0%9E%D0%9B%D0%9B%D0%98%D0%9D%D0%93/IMG_2349.MP4" muted loop autoplay playsinline data-caption="Накатка реболлинг — процесс"></video>
+      </div>
+    </div>
+    <ul class="modal-content-list"><li>Профессиональные трафареты для всех чипов</li><li>Бессвинцовая и оловянно-свинцовая пайка</li><li>Контроль под микроскопом</li></ul>
+    <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="results.html#nakatta" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
+      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Написать в Telegram</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== MATRIX BACKGROUND =====
+const canvas = document.getElementById('matrix-bg');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const cols = Math.floor(canvas.width / 16);
+const drops = Array(cols).fill(1);
+const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ{}[]<>/\\|=+-*&%$#@!?';
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(2, 12, 2, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = '14px Share Tech Mono';
+  drops.forEach((y, i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillStyle = Math.random() > 0.95 ? '#ffffff' : (Math.random() > 0.8 ? '#00d4ff' : '#00ff41');
+    ctx.globalAlpha = Math.random() * 0.8 + 0.2;
+    ctx.fillText(char, i * 16, y * 16);
+    ctx.globalAlpha = 1;
+    if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 50);
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// ===== LIGHTNING =====
+const lc = document.getElementById('lightning-canvas');
+const lctx = lc.getContext('2d');
+lc.width = window.innerWidth;
+lc.height = window.innerHeight;
+window.addEventListener('resize', () => { lc.width = window.innerWidth; lc.height = window.innerHeight; });
+
+let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+let lightningActive = false, lightningTimer = null;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  if (lightningTimer) clearTimeout(lightningTimer);
+  lightningActive = true;
+  lightningTimer = setTimeout(() => { lightningActive = false; }, 200);
+});
+
+function drawLightning(x1, y1, x2, y2, depth) {
+  if (depth === 0) return;
+  const dx = x2 - x1, dy = y2 - y1;
+  const mx = (x1+x2)/2 + (Math.random()-0.5) * Math.sqrt(dx*dx+dy*dy) * 0.4;
+  const my = (y1+y2)/2 + (Math.random()-0.5) * Math.sqrt(dx*dx+dy*dy) * 0.4;
+  lctx.beginPath();
+  lctx.moveTo(x1, y1);
+  lctx.lineTo(mx, my);
+  lctx.strokeStyle = `rgba(0, ${150+Math.random()*105}, ${200+Math.random()*55}, ${0.3 + depth*0.1})`;
+  lctx.lineWidth = depth * 0.5;
+  lctx.stroke();
+  lctx.beginPath();
+  lctx.moveTo(mx, my);
+  lctx.lineTo(x2, y2);
+  lctx.stroke();
+  if (depth > 1) {
+    drawLightning(x1, y1, mx, my, depth-1);
+    drawLightning(mx, my, x2, y2, depth-1);
+    if (Math.random() > 0.7) drawLightning(mx, my, mx + (Math.random()-0.5)*80, my + (Math.random()-0.5)*80, depth-2);
+  }
+}
+
+let frameCount = 0;
+function animateLightning() {
+  frameCount++;
+  lctx.clearRect(0,0,lc.width,lc.height);
+  if (lightningActive && frameCount % 2 === 0) {
+    const count = Math.floor(Math.random()*3)+1;
+    for(let i=0;i<count;i++) {
+      const startX = mouseX + (Math.random()-0.5)*100;
+      const startY = mouseY + (Math.random()-0.5)*100;
+      const endX = mouseX + (Math.random()-0.5)*200;
+      const endY = mouseY + (Math.random()-0.5)*200;
+      drawLightning(startX, startY, endX, endY, 4);
+    }
+    // Glow around cursor
+    const grad = lctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 60);
+    grad.addColorStop(0, 'rgba(0,255,65,0.08)');
+    grad.addColorStop(1, 'transparent');
+    lctx.fillStyle = grad;
+    lctx.beginPath();
+    lctx.arc(mouseX, mouseY, 60, 0, Math.PI*2);
+    lctx.fill();
+  }
+  // Random ambient lightning
+  if (Math.random() > 0.992) {
+    const x1 = Math.random()*lc.width, y1 = 0;
+    const x2 = x1 + (Math.random()-0.5)*200, y2 = Math.random()*lc.height*0.3;
+    drawLightning(x1, y1, x2, y2, 3);
+  }
+  requestAnimationFrame(animateLightning);
+}
+animateLightning();
+
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+let codeParticles = [];
+const codeChars = ['0','1','{','}','<','>','/','\\','=','+','-','*','#','@','!','?'];
+
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  // Code trail
+  if (Math.random() > 0.6) spawnCode(e.clientX, e.clientY);
+});
+
+function spawnCode(x, y) {
+  const el = document.createElement('div');
+  el.className = 'cursor-code';
+  el.textContent = codeChars[Math.floor(Math.random()*codeChars.length)];
+  el.style.left = (x + (Math.random()-0.5)*30) + 'px';
+  el.style.top = (y + (Math.random()-0.5)*30) + 'px';
+  el.style.opacity = '1';
+  document.body.appendChild(el);
+  let op = 1, ty = 0;
+  const anim = setInterval(() => {
+    op -= 0.06; ty -= 1;
+    el.style.opacity = op;
+    el.style.transform = `translateY(${ty}px)`;
+    if (op <= 0) { clearInterval(anim); el.remove(); }
+  }, 30);
+}
+
+// Hover effect on buttons
+document.querySelectorAll('button, a, .service-card, .result-folder, .contact-item').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// ===== MODALS =====
+function openModal(id) {
+  document.getElementById('modal-'+id)?.classList.add('active');
+}
+function closeModal(id) {
+  document.getElementById('modal-'+id)?.classList.remove('active');
+}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', (e) => {
+    if (e.target === el) el.classList.remove('active');
+  });
+});
+// Escape handled in unified listener above
+
+// ===== COUNTER ANIMATION =====
+function animateCounter(el, target) {
+  let current = 0;
+  const step = target / 60;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = Math.floor(current) + (el.dataset.suffix || (target > 10 ? '+' : ''));
+  }, 30);
+}
+
+// ===== INTERSECTION OBSERVER =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      const counter = entry.target.querySelector('[data-count]');
+      if (counter) {
+        entry.target.querySelectorAll('[data-count]').forEach(el => {
+          animateCounter(el, parseInt(el.dataset.count));
+        });
+      }
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ===== HAMBURGER MENU =====
+const hamburger = document.getElementById('navHamburger');
+const navLinks = document.getElementById('navLinks');
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+}
+
+// ===== LAZY VIDEO / IMG ON HOVER =====
+document.querySelectorAll('.card-video-bg[data-src], .card-photo-bg[data-src]').forEach(media => {
+  const card = media.closest('.service-card, .result-folder');
+  if (!card) return;
+  let loaded = false;
+  card.addEventListener('mouseenter', () => {
+    if (!loaded) {
+      loaded = true;
+      media.src = media.dataset.src;
+      if (media.tagName === 'VIDEO') {
+        media.load();
+        media.play().catch(() => {});
+      }
+    }
+  });
+  card.addEventListener('mouseleave', () => {
+    if (media.tagName === 'VIDEO') media.pause();
+  });
+  card.addEventListener('mouseenter', () => {
+    if (loaded && media.tagName === 'VIDEO') media.play().catch(() => {});
+  });
+});
+
+// ===== LIGHTBOX =====
+const lightbox = document.getElementById('lightbox');
+const lightboxContent = document.getElementById('lightbox-content');
+const lightboxCaption = document.getElementById('lightbox-caption');
+const lightboxClose = document.getElementById('lightbox-close');
+
+function openLightbox(item) {
+  const media = item.querySelector('img, video');
+  if (!media) return;
+  lightboxContent.innerHTML = '';
+  lightboxCaption.textContent = media.dataset.caption || '';
+  if (media.tagName === 'VIDEO') {
+    const v = document.createElement('video');
+    v.src = media.src;
+    v.controls = true;
+    v.autoplay = true;
+    v.muted = false;
+    v.loop = true;
+    v.playsinline = true;
+    v.style.maxWidth = '90vw';
+    v.style.maxHeight = '85vh';
+    lightboxContent.appendChild(v);
+  } else {
+    const img = document.createElement('img');
+    img.src = media.src;
+    img.alt = media.alt || '';
+    lightboxContent.appendChild(img);
+  }
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  lightboxContent.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+if (lightbox) {
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+  }
+});
+
+// ===== FLOAT PAYMENT =====
+let floatShown = false;
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  if (scrolled > 0.3 && !floatShown) {
+    floatShown = true;
+    document.getElementById('floatPayment').classList.add('visible');
+    setTimeout(() => {
+      const fp = document.getElementById('floatPayment');
+      if (fp.classList.contains('visible')) fp.classList.remove('visible');
+    }, 8000);
+  }
+});
+
+// ===== TYPING EFFECT IN HERO =====
+const typingEl = document.querySelector('.terminal-line .out');
+if (typingEl) {
+  const text = typingEl.textContent;
+  typingEl.textContent = '';
+  let i = 0;
+  setTimeout(() => {
+    const t = setInterval(() => {
+      typingEl.textContent += text[i++];
+      if (i >= text.length) clearInterval(t);
+    }, 40);
+  }, 1000);
+}
+
+// ===== GLITCH RANDOM =====
+setInterval(() => {
+  document.querySelectorAll('.glitch').forEach(el => {
+    if (Math.random() > 0.95) {
+      el.style.transform = `skewX(${(Math.random()-0.5)*4}deg)`;
+      setTimeout(() => el.style.transform = '', 100);
+    }
+  });
+}, 500);
+
+console.log('%c ██████╗ ██████╗  ██████╗ ████████╗███████╗██╗  ██╗', 'color: #00ff41; font-size: 8px; font-family: monospace;');
+console.log('%c ██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║  ██║', 'color: #00ff41; font-size: 8px; font-family: monospace;');
+console.log('%c ██████╔╝██████╔╝██║   ██║   ██║   █████╗  ███████║', 'color: #00ff41; font-size: 8px; font-family: monospace;');
+console.log('%c ██╔═══╝ ██╔══██╗██║   ██║   ██║   ██╔══╝  ██╔══██║', 'color: #00d4ff; font-size: 8px; font-family: monospace;');
+console.log('%c ██║     ██║  ██║╚██████╔╝   ██║   ███████╗██║  ██║', 'color: #00d4ff; font-size: 8px; font-family: monospace;');
+console.log('%c ╚═╝     ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚══════╝╚═╝  ╚═╝', 'color: #00ff41; font-size: 8px; font-family: monospace;');
+console.log('%c ПроТехСервис | Тамбов | @ProTehServis', 'color: #ffff00; font-size: 12px; font-family: monospace;');
+</script>
+</body>
+</html>
