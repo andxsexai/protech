@@ -1621,6 +1621,23 @@ footer {
   .nav-links.open { display: flex; }
   .nav-links a { padding: 12px 20px; border: none; border-bottom: 1px solid rgba(0,255,65,0.08); }
 }
+
+/* ===== MOBILE: упрощённые тени (экономим GPU) ===== */
+@media (max-width: 768px) {
+  .service-card { box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important; }
+  .service-card:hover { box-shadow: 0 4px 12px rgba(0,255,65,0.15) !important; }
+  .btn-primary, .btn-secondary { box-shadow: none !important; }
+  .btn-primary:hover, .btn-secondary:hover { box-shadow: 0 0 8px rgba(0,255,65,0.3) !important; }
+  .result-folder { box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important; }
+  .review-card { box-shadow: none !important; }
+  .modal { box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important; }
+  /* Hardware acceleration для карточек */
+  .service-card, .result-folder, .modal-media-item {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+}
 </style>
 </head>
 <body>
@@ -1770,12 +1787,13 @@ footer {
       <button class="service-btn">► Смотреть работы</button>
     </div>
 
-    <div class="service-card fade-in" onclick="openModal('consoles')">
+    <div class="service-card fade-in" onclick="openModal('playstation')">
+      <video class="card-video-bg" data-src="PLAYSTATION/PlayStation_5_repair_202603222046.mp4" muted loop playsinline preload="none"></video>
       <span class="service-num">04</span>
       <span class="service-icon">🎮</span>
-      <div class="service-title">Игровые консоли</div>
-      <div class="service-desc">Ремонт PlayStation, Xbox, Nintendo Switch. Замена джойстиков, дисководов, разъёмов HDMI. Чистка и смазка механизмов.</div>
-      <div class="service-price">от 800₽ • срок: 1-3 дня</div>
+      <div class="service-title">Ремонт PlayStation 5 и консолей</div>
+      <div class="service-desc">Профессиональный ремонт PS5, Xbox. Реболлинг APU, чистка жидкого металла, замена HDMI. Скидка 10%.</div>
+      <div class="service-price">от 1500₽ • срок: 1-3 дня</div>
       <button class="service-btn">► Смотреть работы</button>
     </div>
 
@@ -1810,22 +1828,13 @@ footer {
     </div>
 
     <div class="service-card fade-in" onclick="openModal('electro')">
-      <video class="card-video-bg" data-src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop playsinline preload="none"></video>
+      <video class="card-video-bg" data-src="%D0%AD%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%BE%D1%81%D0%B0%D0%BC%D0%BE%D0%BA%D0%B0%D1%82%D1%8B%2C%20%D0%A1%D0%BA%D1%83%D1%82%D0%B5%D1%80%D1%8B/Technician_assembling_hub_202603222046.mp4" muted loop playsinline preload="none"></video>
       <span class="service-num">08</span>
       <span class="service-icon">🛴</span>
-      <div class="service-title">Электросамокаты и Гироскутеры</div>
-      <div class="service-desc">Профессиональный ремонт: замена ячеек АКБ, гидроизоляция IP67, прошивка контроллеров, ремонт мотор-колёс. Любые бренды.</div>
+      <div class="service-title">Ремонт Электросамокатов</div>
+      <div class="service-desc">Ремонт самокатов и гироскутеров. Гидроизоляция IP67, ремонт мотор-колёс, замена АКБ. Скидка 10%.</div>
       <div class="service-price">от 800₽ • срок: 1-3 дня</div>
       <button class="service-btn">► Смотреть работы</button>
-    </div>
-
-    <div class="service-card fade-in" style="background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(0,255,65,0.03)); border-color: rgba(0,212,255,0.2);">
-      <span class="service-num">09</span>
-      <span class="service-icon">⚡</span>
-      <div class="service-title" style="color:var(--neon-cyan);">Срочный ремонт</div>
-      <div class="service-desc">Выезд мастера или максимально быстрое выполнение. Приоритетная очередь, работа в выходные дни.</div>
-      <div class="service-price" style="color:var(--neon-yellow);">+50% к стоимости • в течение 2 часов</div>
-      <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="service-btn" style="border-color:rgba(0,212,255,0.3);color:var(--neon-cyan);">► Написать в Telegram</a>
     </div>
 
   </div>
@@ -2199,19 +2208,25 @@ footer {
   </div>
 </div>
 
-<div class="modal-overlay" id="modal-consoles">
+<div class="modal-overlay" id="modal-playstation">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">🎮 ИГРОВЫЕ КОНСОЛИ</div>
-      <button class="modal-close" onclick="closeModal('consoles')">✕</button>
+      <div class="modal-title">🎮 РЕМОНТ PLAYSTATION 5 И КОНСОЛЕЙ</div>
+      <button class="modal-close" onclick="closeModal('playstation')">✕</button>
+    </div>
+    <div class="modal-media-grid">
+      <div class="modal-media-item">
+        <video src="PLAYSTATION/PlayStation_5_repair_202603222046.mp4" muted loop playsinline preload="metadata" data-caption="PS5 — процесс ремонта"></video>
+      </div>
     </div>
     <ul class="modal-content-list">
-      <li>PlayStation 4/5 — ремонт разъёма HDMI, дисковода — от 1500₽</li>
-      <li>Xbox Series X/S, One — ремонт и чистка — от 1200₽</li>
+      <li>PS5 — реболлинг APU, чистка жидкого металла — от 3500₽</li>
+      <li>PS5 / PS4 — замена разъёма HDMI — от 2000₽</li>
+      <li>PS4 / PS5 — замена дисковода — от 1500₽</li>
+      <li>Xbox Series X/S — ремонт и чистка — от 1200₽</li>
       <li>Nintendo Switch — замена джойстиков (дрейф) — от 800₽</li>
-      <li>Ремонт кнопок и триггеров — от 600₽</li>
-      <li>Замена термопасты — от 500₽</li>
-      <li>Восстановление после воды — от 1800₽</li>
+      <li>Восстановление после воды — от 2000₽</li>
+      <li>Скидка 10% при записи через сайт</li>
     </ul>
     <div style="margin-top:20px;">
       <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn">→ Записаться в Telegram</a>
@@ -2313,7 +2328,7 @@ footer {
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Реболлинг — восстановление BGA-чипов. Профессиональное оборудование для удаления и замены шаровых контактов.</p>
     <div class="modal-media-grid">
       <div class="modal-media-item" onclick="openLightbox(this)">
-        <video src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop autoplay playsinline preload="metadata" data-caption="Реболлинг — процесс работы"></video>
+        <video src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop playsinline preload="metadata" data-caption="Реболлинг — процесс работы"></video>
       </div>
     </div>
     <ul class="modal-content-list">
@@ -2384,7 +2399,7 @@ footer {
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Снятие Activation Lock — разблокировка iPhone/iPad от привязки к чужому Apple ID. Работаем официальными методами.</p>
     <div class="modal-media-grid">
       <div class="modal-media-item" onclick="openLightbox(this)">
-        <video src="%D0%A0%D0%B0%D0%B7%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0%20ICLOUD/Smartphone_screen_opening_202603221154.mp4" muted loop autoplay playsinline preload="metadata" data-caption="Разблокировка iCloud — процесс"></video>
+        <video src="%D0%A0%D0%B0%D0%B7%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0%20ICLOUD/Smartphone_screen_opening_202603221154.mp4" muted loop playsinline preload="metadata" data-caption="Разблокировка iCloud — процесс"></video>
       </div>
     </div>
     <ul class="modal-content-list"><li>Разблокировка через официальные каналы</li><li>Снятие MDM-профилей</li><li>Восстановление доступа к аккаунту</li></ul>
@@ -2401,7 +2416,7 @@ footer {
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Программное и аппаратное увеличение памяти устройств. Телефоны Android, ноутбуки, планшеты.</p>
     <div class="modal-media-grid">
       <div class="modal-media-item" onclick="openLightbox(this)">
-        <video src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop autoplay playsinline preload="metadata" data-caption="NAND чип — увеличение памяти"></video>
+        <video src="%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B0/NAND_flash_chip_202603221155.mp4" muted loop playsinline preload="metadata" data-caption="NAND чип — увеличение памяти"></video>
       </div>
       <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A3%D0%92%D0%95%D0%9B%D0%98%D0%A7%D0%95%D0%9D%D0%98%D0%95%20%D0%9F%D0%90%D0%9C%D0%AF%D0%A2%D0%98/2026-03-22%2012.12.59.jpg" alt="Память 1" loading="lazy" data-caption="Увеличение памяти — этап 1"></div>
       <div class="modal-media-item" onclick="openLightbox(this)"><img src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%A3%D0%92%D0%95%D0%9B%D0%98%D0%A7%D0%95%D0%9D%D0%98%D0%95%20%D0%9F%D0%90%D0%9C%D0%AF%D0%A2%D0%98/2026-03-22%2012.13.06.jpg" alt="Память 2" loading="lazy" data-caption="Увеличение памяти — этап 2"></div>
@@ -2422,7 +2437,7 @@ footer {
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Factory Reset Protection — снятие привязки к Google-аккаунту после сброса настроек.</p>
     <div class="modal-media-grid">
       <div class="modal-media-item" onclick="openLightbox(this)">
-        <video src="FRP%20%D0%9E%D0%B1%D1%85%D0%BE%D0%B4%20%D0%B0%D0%BA%D0%BA%D0%B0%D1%83%D0%BD%D1%82%D0%BE%D0%B2%20Google/Smartphone_connected_to_202603221155.mp4" muted loop autoplay playsinline preload="metadata" data-caption="FRP обход — процесс работы"></video>
+        <video src="FRP%20%D0%9E%D0%B1%D1%85%D0%BE%D0%B4%20%D0%B0%D0%BA%D0%BA%D0%B0%D1%83%D0%BD%D1%82%D0%BE%D0%B2%20Google/Smartphone_connected_to_202603221155.mp4" muted loop playsinline preload="metadata" data-caption="FRP обход — процесс работы"></video>
       </div>
     </div>
     <ul class="modal-content-list"><li>Samsung — все серии (A, S, M, Note)</li><li>Xiaomi, Redmi, POCO</li><li>Huawei, Honor</li><li>Realme, OPPO, Vivo</li><li>LG, Motorola и другие</li></ul>
@@ -2456,7 +2471,7 @@ footer {
     <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Накатка новых шаров на BGA-чипы с применением специализированных трафаретов и паяльной пасты.</p>
     <div class="modal-media-grid">
       <div class="modal-media-item" onclick="openLightbox(this)">
-        <video src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9D%D0%90%D0%9A%D0%90%D0%A2%D0%9A%D0%90%20%D0%A0%D0%95%D0%91%D0%9E%D0%9B%D0%9B%D0%98%D0%9D%D0%93/IMG_2349.MP4" muted loop autoplay playsinline preload="metadata" data-caption="Накатка реболлинг — процесс"></video>
+        <video src="%D0%A0%D0%B5%D0%B7%D1%83%D0%BB%D1%8C%D1%82%D0%B0%D1%82%D1%8B/%D0%9D%D0%90%D0%9A%D0%90%D0%A2%D0%9A%D0%90%20%D0%A0%D0%95%D0%91%D0%9E%D0%9B%D0%9B%D0%98%D0%9D%D0%93/IMG_2349.MP4" muted loop playsinline preload="metadata" data-caption="Накатка реболлинг — процесс"></video>
       </div>
     </div>
     <ul class="modal-content-list"><li>Профессиональные трафареты для всех чипов</li><li>Бессвинцовая и оловянно-свинцовая пайка</li><li>Контроль под микроскопом</li></ul>
@@ -2669,28 +2684,53 @@ if (hamburger && navLinks) {
   });
 }
 
-// ===== LAZY VIDEO / IMG ON HOVER =====
-document.querySelectorAll('.card-video-bg[data-src], .card-photo-bg[data-src]').forEach(media => {
-  const card = media.closest('.service-card, .result-folder');
-  if (!card) return;
-  let loaded = false;
-  card.addEventListener('mouseenter', () => {
-    if (!loaded) {
-      loaded = true;
-      media.src = media.dataset.src;
-      if (media.tagName === 'VIDEO') {
-        media.load();
-        media.play().catch(() => {});
+// ===== VIDEO INTERSECTION OBSERVER (20% threshold) =====
+// Загружаем и воспроизводим видео-фон только когда карточка попадает в viewport
+// При выходе — обязательно pausim → разгружаем GPU/CPU
+(function initCardVideoIO() {
+  const isTouchUI = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+  document.querySelectorAll('.card-video-bg[data-src]').forEach(vid => {
+    const card = vid.closest('.service-card, .result-folder');
+    if (!card) return;
+    let loaded = false;
+
+    function loadAndPlay() {
+      if (!loaded) {
+        loaded = true;
+        vid.src = vid.dataset.src;
+        vid.load();
       }
+      vid.play().catch(() => {});
+    }
+
+    // IntersectionObserver — работает и на мобилке, и на десктопе
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) loadAndPlay();
+        else vid.pause();
+      });
+    }, { threshold: 0.2 });
+    io.observe(card);
+
+    // На десктопе дополнительно ставим на паузу при уходе курсора,
+    // чтобы лишние видео не крутились одновременно
+    if (!isTouchUI) {
+      card.addEventListener('mouseleave', () => vid.pause());
+      card.addEventListener('mouseenter', () => { if (loaded) vid.play().catch(() => {}); });
     }
   });
-  card.addEventListener('mouseleave', () => {
-    if (media.tagName === 'VIDEO') media.pause();
+
+  // Фото-заглушки грузим тоже через IO
+  document.querySelectorAll('.card-photo-bg[data-src]').forEach(img => {
+    const card = img.closest('.service-card, .result-folder');
+    if (!card) return;
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { img.src = img.dataset.src; io.disconnect(); } });
+    }, { threshold: 0.2 });
+    io.observe(card);
   });
-  card.addEventListener('mouseenter', () => {
-    if (loaded && media.tagName === 'VIDEO') media.play().catch(() => {});
-  });
-});
+})();
 
 // ===== LIGHTBOX =====
 const lightbox = document.getElementById('lightbox');
