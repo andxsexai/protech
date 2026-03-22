@@ -1640,6 +1640,33 @@ footer {
   will-change: transform;
   backface-visibility: hidden;
 }
+
+/* ===== iOS SAFARI FIXES ===== */
+/* Фикс 100vh на iOS (адресная строка меняет высоту) */
+.hero { min-height: 100svh; min-height: 100dvh; }
+/* Убираем bounce-scroll в WebView */
+html { overscroll-behavior: none; }
+/* Плавный скролл модала на iOS */
+.modal { -webkit-overflow-scrolling: touch; }
+/* Safe area (notch/dynamic island/home bar) */
+nav { padding-top: max(15px, env(safe-area-inset-top)); }
+#chat-widget { bottom: max(20px, env(safe-area-inset-bottom, 20px)); }
+.float-payment { bottom: max(20px, env(safe-area-inset-bottom, 20px)); }
+/* Убираем подсветку касания на Android */
+* { -webkit-tap-highlight-color: transparent; }
+/* Запрещаем выделение текста при скролле */
+.service-card, .result-folder, nav, .modal-header { -webkit-user-select: none; user-select: none; }
+
+/* ===== КЛАССЫ УСТРОЙСТВ (ставятся через JS) ===== */
+body.is-ios video { object-fit: cover; }
+/* Telegram/Instagram WebView: скрываем тяжёлые эффекты */
+body.is-webview #matrix-bg,
+body.is-webview #lightning-canvas { display: none !important; }
+body.is-webview .card-video-bg { display: none !important; }
+body.is-webview .glitch::before,
+body.is-webview .glitch::after { display: none !important; }
+/* iOS и Android: отключаем custom cursor полностью */
+body.is-mobile #cursor, body.is-mobile #cursor-trail { display: none !important; }
 </style>
 </head>
 <body>
@@ -2478,14 +2505,20 @@ footer {
 
 <div class="modal-overlay" id="modal-nakatta">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">📁 НАКАТКА РЕБОЛЛИНГ</div><button class="modal-close" onclick="closeModal('nakatta')">✕</button></div>
-    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Накатка новых шаров на BGA-чипы с применением специализированных трафаретов и паяльной пасты.</p>
+    <div class="modal-header"><div class="modal-title">🔬 НАКАТКА РЕБОЛЛИНГ</div><button class="modal-close" onclick="closeModal('nakatta')">✕</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.8;">Накатка шаров на BGA-чипы под микроскопом — восстановление контактов после перегрева или механических повреждений.</p>
     <div class="modal-media-grid">
       <div class="modal-media-item" onclick="openLightbox(this)">
-        <video src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop playsinline preload="metadata" data-caption="Накатка реболлинг — процесс пайки"></video>
+        <video src="%D0%A0%D0%B5%D0%B1%D0%BE%D0%BB%D0%BB%D0%B8%D0%BD%D0%B3%20(%D0%92%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BE%D1%82%20%D0%BF%D0%B5%D1%80%D0%B5%D0%B3%D1%80%D0%B5%D0%B2%D0%B0%20%D0%B8%20%D0%BF%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9)/Technician_hand_using_202603221154.mp4" muted loop playsinline preload="metadata" data-caption="Накатка реболлинг — нанесение шаров под микроскопом"></video>
       </div>
     </div>
-    <ul class="modal-content-list"><li>Профессиональные трафареты для всех чипов</li><li>Бессвинцовая и оловянно-свинцовая пайка</li><li>Контроль под микроскопом</li></ul>
+    <ul class="modal-content-list">
+      <li>Накатка шаров на BGA-чипы под микроскопом</li>
+      <li>Профессиональные трафареты для всех чипов</li>
+      <li>Бессвинцовая и оловянно-свинцовая пайка</li>
+      <li>Контроль качества под цифровым микроскопом</li>
+      <li>Восстановление после перегрева, воды, падений</li>
+    </ul>
     <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
       <a href="results.html#nakatta" target="_blank" rel="noopener noreferrer" class="gallery-link-btn" style="flex:1">📸 Полная галерея</a>
       <a href="https://t.me/ProTehServis" target="_blank" rel="noopener noreferrer" class="pay-btn" style="flex:1;margin-top:0;">→ Написать в Telegram</a>
@@ -2494,14 +2527,49 @@ footer {
 </div>
 
 <script>
-// ===== ОПРЕДЕЛЕНИЕ СЛАБЫХ УСТРОЙСТВ =====
+// ===== ОПРЕДЕЛЕНИЕ УСТРОЙСТВА И ОКРУЖЕНИЯ =====
+const ua = navigator.userAgent;
+
+// Платформа
+const isIOS     = /iPhone|iPad|iPod/.test(ua);
+const isAndroid = /Android/.test(ua);
+
+// WebView-окружения
+const isTelegram  = /Telegram/.test(ua) || !!(window.TelegramWebviewProxy || window.Telegram?.WebApp);
+const isInstagram = /Instagram/.test(ua);
+const isFacebook  = /FBAN|FBAV|FB_IAB/.test(ua);
+const isVK        = /VKShare|VK\//.test(ua);
+// Общий WebView: нет адресной строки браузера
+const isWebView = isTelegram || isInstagram || isFacebook || isVK
+  || (isAndroid && !/Chrome\/\d/.test(ua))
+  || (isIOS && !/Safari\/\d/.test(ua));
+
 const isTouchDevice = window.matchMedia('(hover: none)').matches || ('ontouchstart' in window);
 const isSmallScreen = window.innerWidth < 768;
-const isMobile = isTouchDevice || isSmallScreen;
-const cores = navigator.hardwareConcurrency || 2;
-const conn = navigator.connection;
+const isMobile = isTouchDevice || isSmallScreen || isIOS || isAndroid;
+const cores  = navigator.hardwareConcurrency || 2;
+const conn   = navigator.connection;
 const slowNet = conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g' || conn.saveData);
 const isLowEnd = isMobile && (cores <= 4 || slowNet);
+
+// Ставим классы на body — CSS может таргетировать устройство
+if (isMobile)   document.body.classList.add('is-mobile');
+if (isIOS)      document.body.classList.add('is-ios');
+if (isAndroid)  document.body.classList.add('is-android');
+if (isWebView)  document.body.classList.add('is-webview');
+if (isTelegram) document.body.classList.add('is-telegram');
+
+// iOS Safari: фикс высоты viewport (100vh != видимая область)
+if (isIOS) {
+  const setVh = () => document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
+  setVh();
+  window.addEventListener('resize', setVh);
+}
+
+// Android/iOS WebView: блокируем bounce-скролл
+if (isWebView) {
+  document.body.style.overscrollBehavior = 'none';
+}
 
 // Скрываем курсор сразу на тач-устройствах
 if (isTouchDevice) {
@@ -2643,17 +2711,34 @@ if (!isTouchDevice && cursor) {
 
 // ===== MODALS =====
 function openModal(id) {
-  document.getElementById('modal-'+id)?.classList.add('active');
+  const overlay = document.getElementById('modal-' + id);
+  if (!overlay) return;
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  // Явно запускаем видео внутри модала (IO не видит скрытые элементы)
+  setTimeout(() => {
+    overlay.querySelectorAll('video').forEach(v => {
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    });
+  }, 80);
 }
 function closeModal(id) {
-  document.getElementById('modal-'+id)?.classList.remove('active');
+  const overlay = document.getElementById('modal-' + id);
+  if (!overlay) return;
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  overlay.querySelectorAll('video').forEach(v => v.pause());
 }
 document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', (e) => {
-    if (e.target === el) el.classList.remove('active');
+  el.addEventListener('click', e => {
+    if (e.target === el) {
+      el.classList.remove('active');
+      document.body.style.overflow = '';
+      el.querySelectorAll('video').forEach(v => v.pause());
+    }
   });
 });
-// Escape handled in unified listener above
 
 // ===== COUNTER ANIMATION =====
 function animateCounter(el, target) {
@@ -2697,6 +2782,8 @@ if (hamburger && navLinks) {
 
 // ===== VIDEO: MINIMAL INTERSECTIONOBSERVER =====
 // Запуск только когда видео в кадре, пауза при уходе — снимает нагрузку с CPU/GPU
+// ===== VIDEO: MINIMAL INTERSECTIONOBSERVER =====
+// Разделяем: card-video-bg (lazy, preload=none) и modal video (preload=metadata, явный play)
 const videoObserver = new IntersectionObserver(entries => {
   entries.forEach(({ target: v, isIntersecting }) => {
     if (isIntersecting) {
@@ -2711,8 +2798,14 @@ const videoObserver = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('video').forEach(v => {
+// Карточки (фон при наведении) — грузим лениво
+document.querySelectorAll('.card-video-bg').forEach(v => {
   v.preload = 'none';
+  videoObserver.observe(v);
+});
+
+// Модальные видео — наблюдаем но НЕ трогаем preload (metadata уже стоит в HTML)
+document.querySelectorAll('.modal-media-item video').forEach(v => {
   videoObserver.observe(v);
 });
 
