@@ -559,6 +559,7 @@ section {
   color: rgba(0,255,65,0.03);
   font-weight: 900;
   white-space: nowrap;
+  pointer-events: none;
 }
 .diag-price-display {
   text-align: center;
@@ -1165,6 +1166,13 @@ footer {
   .modal-work-grid { grid-template-columns: repeat(2, 1fr); }
   .modal-media-grid { grid-template-columns: repeat(2, 1fr); }
   .diag-main-price { font-size: 48px; }
+  /* Диагностика 500₽: водяной знак меньше, карточка не ломается */
+  .diag-card { padding: 24px 18px; overflow: hidden; }
+  .diag-card::before {
+    font-size: 28px;
+    top: 8px; right: 10px;
+    opacity: 0.6;
+  }
   .section-title { letter-spacing: 1px; }
   .cta-group { flex-direction: column; align-items: center; }
   .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
